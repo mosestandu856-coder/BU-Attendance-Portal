@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan Attendance</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .status-box { padding: 1.5rem; border-radius: var(--border-radius); text-align: center; font-size: 1.1rem; font-weight: 600; margin-top: 1rem; }
+    .status-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .status-error   { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .status-info    { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .spinner { display: inline-block; width: 1.2rem; height: 1.2rem; border: 3px solid #ccc; border-top-color: var(--primary-color); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: .5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/dashboard.html">My Attendance</a>
+  </nav>
+  <main>
+    <section class="card" style="max-width:480px;margin:0 auto;text-align:center;">
+      <h1>Attendance Check-In</h1>
+      <div id="status-area">
+        <div class="status-box status-info"><span class="spinner"></span>Verifying your location...</div>
+      </div>
+      <div id="lecture-info" style="display:none;margin-top:1rem;">
+        <h2 id="lecture-title"></h2>
+        <p id="lecture-period" style="color:var(--text-muted);"></p>
+      </div>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    
+    // Device detection for debugging
+    const ua = navigator.userAgent || '';
+    const iOS = /iPhone|iPad|iPod/i.test(ua);
+    console.log('Device:', iOS ? 'iOS' : 'Other', '| User Agent:', ua);
+    console.log('Token from QR:', token);
+
+    function setStatus(msg, type) {
+      document.getElementById('status-area').innerHTML =
+        `<div class="status-box status-${type}">${msg}</div>`;
+    }
+
+    async function checkIn(lat, lng) {
+      console.log('checkIn called with lat:', lat, 'lng:', lng);
+      
+      // First validate the token and check if already scanned
+      const checkRes = await fetch(`/api/attendance/lecture-by-token/${token}`);
+      const checkData = await checkRes.json();
+      console.log('Lecture validation response:', checkData);
+
+      if (!checkRes.ok) {
+        setStatus(checkData.error, 'error');
+        return;
+      }
+
+      document.getElementById('lecture-info').style.display = 'block';
+      document.getElementById('lecture-title').textContent = checkData.title;
+      document.getElementById('lecture-period').textContent = `Period: ${checkData.period}`;
+
+      setStatus('<span class="spinner"></span>Recording attendance...', 'info');
+
+      // Submit scan
+      console.log('Submitting attendance scan...');
+      const res = await fetch('/api/attendance/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, student_lat: lat, student_lng: lng })
+      });
+      const data = await res.json();
+      console.log('Scan response:', data);
+
+      if (res.ok) {
+        setStatus(`✓ Attendance recorded for <strong>${data.lecture_title}</strong><br>Period: ${data.period}`, 'success');
+      } else {
+        setStatus(data.error || 'Failed to record attendance.', 'error');
+      }
+    }
+
+    async function run() {
+      console.log('Starting scan process...');
+      if (!token) { 
+        console.error('No token found in URL');
+        setStatus('Invalid QR code — no token found.', 'error'); 
+        return; 
+      }
+
+      // Check auth first
+      console.log('Checking authentication...');
+      const meRes = await fetch('/api/auth/me');
+      if (!meRes.ok) {
+        console.error('Not authenticated');
+        setStatus('You must be logged in to scan. <a href="/login.html">Login here</a>', 'error');
+        return;
+      }
+      console.log('User authenticated');
+
+      // Get location
+      if (!navigator.geolocation) {
+        console.log('Geolocation not supported, proceeding without location');
+        await checkIn(null, null);
+        return;
+      }
+
+      console.log('Requesting geolocation...');
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          console.log('Location obtained:', pos.coords.latitude, pos.coords.longitude);
+          await checkIn(pos.coords.latitude, pos.coords.longitude);
+        },
+        async (err) => {
+          console.log('Location error:', err.message, '- proceeding without location');
+          // Location denied — server will decide based on whether class has location set
+          setStatus('<span class="spinner"></span>Location unavailable, checking in without location...', 'info');
+          await checkIn(null, null);
+        },
+        { timeout: 8000, maximumAge: 0, enableHighAccuracy: true }
+      );
+    }
+
+    run().catch(err => setStatus('An unexpected error occurred: ' + err.message, 'error'));
+  </script>
+</body>
+</html>

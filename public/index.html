@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BU Attendance Portal - Home</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/login.html">Login</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <h1 id="hero-title">Welcome to BU Attendance Portal</h1>
+      <p>Track attendance, manage courses, and access reports from one responsive portal built for students, lecturers, QA teams, and administrators.</p>
+      <div class="hero-actions">
+        <a href="/login.html" class="cta-link cta-link-primary">Go to Login</a>
+        <a href="/contact.html" class="cta-link cta-link-secondary">Get Support</a>
+      </div>
+    </section>
+
+
+  </main>
+
+  <script src="/js/nav.js"></script>
+  <script>
+    // Load system name from server and update page
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/settings');
+        if (res.ok) {
+          const s = await res.json();
+          const name = s.name || 'BU Attendance Portal';
+          document.getElementById('hero-title').textContent = 'Welcome to ' + name;
+          document.title = name + ' - Home';
+        }
+      } catch(e) {}
+    })();
+  </script>
+</body>
+</html>

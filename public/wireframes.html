@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BU Attendance Portal – Wireframes</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#e8eaf0;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;color:#111;padding:1.5rem}
+h1{text-align:center;font-size:1.7rem;font-weight:900;margin-bottom:.3rem;color:#111}
+.subtitle{text-align:center;font-size:.9rem;color:#555;margin-bottom:1.5rem}
+.jump-nav{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:2.5rem;padding:.75rem 1rem;background:#fff;border:2px solid #333;border-radius:4px}
+.jump-nav a{font-size:.82rem;font-weight:700;color:#111;text-decoration:none;padding:.3rem .75rem;border:1.5px solid #555;border-radius:3px}
+.jump-nav a:hover{background:#eee}
+.wf-section{margin-bottom:3.5rem}
+.wf-label{font-size:1.1rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.85rem;padding-bottom:.5rem;border-bottom:3px solid #111;color:#111}
+.wf-frame{background:#fff;border:2.5px solid #333;border-radius:4px;overflow:hidden;max-width:920px;width:100%}
+.wf-nav{background:#e8e8e8;border-bottom:2px solid #555;padding:.55rem 1rem;display:flex;align-items:center;gap:1rem}
+.wf-logo-txt{font-size:.82rem;font-weight:800;color:#333;border:1.5px solid #888;padding:.2rem .6rem;border-radius:3px}
+.wf-nav-links{display:flex;gap:.4rem;margin-left:auto}
+.wf-nav-link{font-size:.72rem;font-weight:600;color:#555;padding:.2rem .55rem;border:1px solid #aaa;border-radius:2px;background:#f5f5f5}
+.wf-body{padding:1.25rem;background:#f0f0f0}
+.wf-card{border:1.5px solid #aaa;border-radius:4px;padding:.9rem;margin-bottom:.9rem;background:#fafafa}
+.wf-card-title{font-size:.95rem;font-weight:800;margin-bottom:.75rem;color:#111}
+.wf-card-sub{font-size:.78rem;color:#555;margin-bottom:.75rem}
+.wf-input{height:30px;background:#f5f5f5;border:1.5px solid #888;border-radius:3px;margin-bottom:.65rem;width:100%;display:flex;align-items:center;padding:0 .6rem;font-size:.75rem;color:#888;font-style:italic}
+.wf-btn{height:32px;background:#444;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;padding:0 1rem;cursor:default}
+.wf-btn.outline{background:#fff;color:#333;border:2px solid #555}
+.wf-btn.sm{height:26px;padding:0 .75rem;font-size:.72rem}
+.wf-btn.danger{background:#666}
+.wf-btn.grey{background:#888}
+.wf-table{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.78rem}
+.wf-table th{background:#e0e0e0;border:1.5px solid #999;padding:.4rem .65rem;font-weight:800;text-align:left;color:#222}
+.wf-table td{border:1px solid #ccc;padding:.35rem .65rem;color:#333}
+.wf-table tbody tr:hover td{background:#f5f5f5}
+.wf-chart{height:120px;background:repeating-linear-gradient(45deg,#e0e0e0,#e0e0e0 4px,#f5f5f5 4px,#f5f5f5 12px);border:1.5px solid #aaa;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#555;font-style:italic}
+.wf-img{background:repeating-linear-gradient(45deg,#d8d8d8,#d8d8d8 4px,#efefef 4px,#efefef 12px);border:1.5px solid #aaa;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#555;font-style:italic}
+.wf-badge{display:inline-block;padding:2px 9px;border:1.5px solid #777;border-radius:99px;font-size:.72rem;font-weight:700;background:#eee;color:#333}
+.wf-badge.green{background:#e8e8e8;color:#333;border-color:#888}
+.wf-badge.red{background:#e8e8e8;color:#333;border-color:#888}
+.wf-badge.grey{background:#f0f0f0;color:#555;border-color:#aaa}
+.wf-tabs{display:flex;gap:0;border-bottom:2.5px solid #444;margin-bottom:.9rem;flex-wrap:wrap;background:#e8e8e8;padding:.4rem .4rem 0}
+.wf-tab{padding:.4rem .9rem;border:1.5px solid #555;border-bottom:none;font-size:.78rem;font-weight:700;background:#ddd;margin-right:3px;border-radius:3px 3px 0 0;color:#333}
+.wf-tab.active{background:#444;color:#fff}
+.wf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.wf-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem}
+.wf-stat{border:1.5px solid #aaa;border-radius:4px;padding:.75rem;text-align:center;background:#f5f5f5}
+.wf-stat .v{font-size:1.5rem;font-weight:900;color:#222}
+.wf-stat .l{font-size:.7rem;color:#555;margin-top:.2rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+label{font-size:.78rem;font-weight:700;display:block;margin-bottom:.25rem;color:#222}
+.row{display:flex;gap:.75rem;align-items:flex-end;margin-bottom:.65rem}
+.col{flex:1}
+.wf-section-head{font-size:.88rem;font-weight:800;margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1.5px solid #ccc;color:#222}
+.wf-card.secondary{border-style:dashed;border-color:#bbb;background:#fafafa}
+@media(max-width:640px){
+  body{padding:.75rem}
+  .wf-frame{max-width:100%}
+  .wf-grid2,.wf-grid3{grid-template-columns:1fr}
+  .wf-tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:0}
+  .wf-tab{white-space:nowrap;font-size:.7rem;padding:.35rem .6rem}
+  .wf-table{font-size:.7rem;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .wf-table th,.wf-table td{padding:.3rem .4rem;white-space:nowrap}
+  .wf-stat .v{font-size:1.1rem}
+  .wf-stat .l{font-size:.62rem}
+  .wf-section{margin-bottom:2rem}
+  .wf-label{font-size:.88rem}
+  .jump-nav{gap:.35rem}
+  .jump-nav a{font-size:.72rem;padding:.25rem .5rem}
+  h1{font-size:1.3rem}
+  .wf-body{padding:.75rem}
+  .wf-card{padding:.65rem}
+  .wf-card-title{font-size:.88rem}
+  .wf-nav-links{display:none}
+  .wf-btn{font-size:.72rem;padding:0 .65rem;height:28px}
+  .wf-btn.sm{height:24px;padding:0 .55rem;font-size:.68rem}
+  .wf-input{font-size:.72rem}
+  [style*="grid-template-columns:2fr 1.5fr"]{display:block!important}
+  [style*="grid-template-columns:repeat(6"]{grid-template-columns:repeat(3,1fr)!important}
+  [style*="grid-template-columns:repeat(5"]{grid-template-columns:repeat(3,1fr)!important}
+}
+</style>
+</head>
+<body>
+<h1>BU Attendance Portal – Wireframes</h1>
+<p class="subtitle">UI Wireframes &mdash; BU Attendance Portal System &mdash; All Pages</p>
+<nav class="jump-nav">
+  <a href="#wf-home">1. Home</a>
+  <a href="#wf-about">2. About</a>
+  <a href="#wf-login">3. Login</a>
+  <a href="#wf-register">4. Register</a>
+  <a href="#wf-contact">5. Contact</a>
+  <a href="#wf-student">6. Student Dashboard</a>
+  <a href="#wf-scan">7. Scan Page</a>
+  <a href="#wf-lecturer">8. Lecturer Dashboard</a>
+  <a href="#wf-admin">9. Admin Dashboard</a>
+  <a href="#wf-qa">10. QA Dashboard</a>
+<!-- ---------------------------------------------------------- -->
+<!-- 1. HOME PAGE -->
+<!-- ---------------------------------------------------------- -->
+<div class="wf-section" id="wf-home">
+<div class="wf-label">1. Home Page — index.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links">
+      <div class="wf-nav-link">Home</div>
+      <div class="wf-nav-link">About</div>
+      <div class="wf-nav-link">Contact</div>
+      <div class="wf-nav-link">Login</div>
+    </div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card" style="text-align:center;padding:2.5rem 2rem">
+      <div style="font-size:1.4rem;font-weight:900;margin-bottom:.6rem">Welcome to BU Attendance Portal</div>
+      <div style="font-size:.85rem;color:#555;margin-bottom:.5rem">Track and manage lecture attendance efficiently.</div>
+      <div style="font-size:.85rem;color:#555;margin-bottom:1.25rem">Role-based access for Admin, Lecturers, Students and QA Office.</div>
+      <div class="wf-btn" style="margin:0 auto">Show Info</div>
+    </div>
+    <div class="wf-card">
+      <div style="font-size:.82rem;color:#888;font-style:italic">Dynamic message area — updates on button click</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ---------------------------------------------------------- -->
+<!-- 2. ABOUT PAGE -->
+<div class="wf-section" id="wf-about">
+<div class="wf-label">2. About Page — about.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div><div class="wf-nav-link">Login</div></div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card">
+      <div class="wf-card-title">About BU Attendance Portal</div>
+      <div style="font-size:.85rem;color:#444;line-height:1.7;margin-bottom:.75rem">The BU Attendance Portal is a web-based attendance management system developed for Bugema University. It enables lecturers to generate QR codes for each lecture, and students to scan them to record their attendance in real time.</div>
+      <div style="font-size:.85rem;color:#444;line-height:1.7">The system supports biometric fingerprint verification, GPS location checking, and role-based access for Admins, Lecturers, Students, and the QA Office.</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Key Features</div>
+      <div class="wf-grid2">
+        <div>
+          <div class="wf-section-head">Attendance Tracking</div>
+          <ul style="font-size:.82rem;color:#444;padding-left:1.1rem;line-height:1.8">
+            <li>QR code generation per lecture</li>
+            <li>Real-time attendance scanning</li>
+            <li>GPS location verification</li>
+            <li>Biometric fingerprint support</li>
+          </ul>
+        </div>
+        <div>
+          <div class="wf-section-head">User Roles</div>
+          <ul style="font-size:.82rem;color:#444;padding-left:1.1rem;line-height:1.8">
+            <li>Admin — full system control</li>
+            <li>Lecturer — manage courses &amp; lectures</li>
+            <li>Student — enroll &amp; scan attendance</li>
+            <li>QA Office — monitor &amp; report</li>
+          </ul>
+        </div>
+        <div>
+          <div class="wf-section-head">Course Management</div>
+          <ul style="font-size:.82rem;color:#444;padding-left:1.1rem;line-height:1.8">
+            <li>Admin creates &amp; assigns courses</li>
+            <li>Student enrollment requests</li>
+            <li>Admin approval workflow</li>
+            <li>Semester management</li>
+          </ul>
+        </div>
+        <div>
+          <div class="wf-section-head">Technology Stack</div>
+          <ul style="font-size:.82rem;color:#444;padding-left:1.1rem;line-height:1.8">
+            <li>Node.js + Express backend</li>
+            <li>SQLite database</li>
+            <li>HTML5 QR Scanner</li>
+            <li>WebAuthn biometric API</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">System Information</div>
+      <table class="wf-table">
+        <tbody>
+          <tr><td style="font-weight:700;width:160px">Institution</td><td>Bugema University, Kampala — Uganda</td></tr>
+          <tr><td style="font-weight:700">Version</td><td>1.0.0</td></tr>
+          <tr><td style="font-weight:700">Contact</td><td>P. O. Box 6529 Kampala, Tel: +256-312-351-400</td></tr>
+          <tr><td style="font-weight:700">Website</td><td>www.bugemauniv.ac.ug</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 3. LOGIN PAGE -->
+<!-- ---------------------------------------------------------- -->
+<div class="wf-section" id="wf-login">
+<div class="wf-label">3. Login Page — login.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div></div>
+  </div>
+  <div class="wf-body" style="max-width:440px;margin:0 auto">
+    <div class="wf-card">
+      <div class="wf-card-title">Login to Your Account</div>
+      <label>Registration Number</label>
+      <div class="wf-input">e.g. 24/BCC/BU/R/0016</div>
+      <label>Password</label>
+      <div class="wf-input">••••••••</div>
+      <div class="wf-btn" style="width:100%;justify-content:center;margin-top:.25rem">Login</div>
+      <div style="font-size:.75rem;color:#666;margin-top:.75rem;text-align:center">Don't have an account? <span style="font-weight:700">Register here</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ---------------------------------------------------------- -->
+<!-- 3. REGISTER PAGE -->
+<!-- ---------------------------------------------------------- -->
+<div class="wf-section" id="wf-register">
+<div class="wf-label">3. Register Page — register.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div></div>
+  </div>
+  <div class="wf-body" style="max-width:440px;margin:0 auto">
+    <div class="wf-card">
+      <div class="wf-card-title">Create an Account</div>
+      <div class="wf-card-sub">Students register themselves. First registered user becomes Admin.</div>
+      <label>Full Name / Username</label>
+      <div class="wf-input">e.g. Moses Tandu</div>
+      <label>Registration Number</label>
+      <div class="wf-input">e.g. 24/BCC/BU/R/0016</div>
+      <label>Password</label>
+      <div class="wf-input">Choose a strong password</div>
+      <div class="wf-btn" style="width:100%;justify-content:center;margin-top:.25rem">Register</div>
+      <div style="font-size:.75rem;color:#666;margin-top:.75rem;text-align:center">Already have an account? <span style="font-weight:700">Login here</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ---------------------------------------------------------- -->
+<!-- 4. CONTACT PAGE -->
+<!-- ---------------------------------------------------------- -->
+<div class="wf-section" id="wf-contact">
+<div class="wf-label">5. Contact Page — contact.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div><div class="wf-nav-link">Login</div></div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card" style="text-align:center;padding:2.5rem 2rem;">
+      <div class="wf-card-title" style="font-size:1.2rem;">Contact Support</div>
+      <div class="wf-card-sub">Need help with the BU Attendance Portal? Chat directly with the admin on WhatsApp for the fastest response.</div>
+      <div style="display:inline-flex;align-items:center;gap:.65rem;background:#555;color:#fff;padding:.9rem 2.25rem;border-radius:8px;font-weight:700;font-size:1rem;margin:1rem auto;">
+        <div style="width:28px;height:28px;background:#888;border-radius:50%;flex-shrink:0"></div>
+        Get Help
+      </div>
+      <div style="font-size:.82rem;color:#666;margin-top:.75rem;">+256 765 924 113 — Available for support</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 8. ADMIN DASHBOARD -->
+<div class="wf-section" id="wf-admin">
+<div class="wf-label">8. Admin Dashboard — admin.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div><div class="wf-nav-link">Admin</div></div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:1.1rem;font-weight:800">Admin Dashboard</div><div style="font-size:.78rem;color:#666;margin-top:.2rem">Logged in as: Admin (System Controller)</div></div>
+      <div class="wf-btn sm">Logout</div>
+    </div>
+    <div class="wf-tabs">
+      <div class="wf-tab active">Create Accounts</div>
+      <div class="wf-tab">Manage Users</div>
+      <div class="wf-tab">Courses</div>
+      <div class="wf-tab">Enrollment Requests <span class="wf-badge">3</span></div>
+      <div class="wf-tab">Semester</div>
+      <div class="wf-tab">Settings</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Create Lecturer / QA Account</div>
+      <div class="wf-card-sub">Only admins can create lecturer and QA accounts. Students register themselves.</div>
+      <div class="wf-grid2">
+        <div><label>Full Name / Username</label><div class="wf-input">e.g. Dr. John Smith</div></div>
+        <div><label>Staff / ID Number</label><div class="wf-input">e.g. LEC/2024/001</div></div>
+        <div><label>Password</label><div class="wf-input">Set a password</div></div>
+        <div><label>Role</label><div class="wf-input">Lecturer / QA Office</div></div>
+      </div>
+      <div class="wf-btn">Create Account</div>
+    </div>
+    <div class="wf-card secondary">
+      <div class="wf-card-title">Manage Users (Tab Preview)</div>
+      <table class="wf-table">
+        <thead><tr><th>Username</th><th>Reg / Staff No.</th><th>Role</th><th>Registered</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td>Moses Tandu</td><td>24/BCC/BU/R/0016</td><td><div class="wf-badge">student</div></td><td>01 Jan 2026</td><td><div style="display:flex;gap:.3rem"><div class="wf-btn sm" style="height:22px">Edit</div><div class="wf-btn sm" style="height:22px;background:#dc2626">Delete</div></div></td></tr>
+          <tr><td>John William</td><td>LEC/BU/001</td><td><div class="wf-badge">lecturer</div></td><td>15 Dec 2025</td><td><div style="display:flex;gap:.3rem"><div class="wf-btn sm" style="height:22px">Edit</div><div class="wf-btn sm" style="height:22px;background:#dc2626">Delete</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card secondary">
+      <div class="wf-card-title">Enrollment Requests (Tab Preview)</div>
+      <div class="wf-card-sub">Students request to enroll in courses. Approve or reject each request below.</div>
+      <table class="wf-table">
+        <thead><tr><th>Student</th><th>Reg Number</th><th>Course</th><th>Semester</th><th>Requested</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td>Moses Tandu</td><td>24/BCC/BU/R/0016</td><td><strong>BSEC1103</strong> — Database Systems</td><td>Semester 1 2025/2026</td><td>07 Apr 2026</td><td><div style="display:flex;gap:.3rem"><div class="wf-btn sm" style="height:22px">Approve</div><div class="wf-btn sm" style="height:22px;background:#888">Reject</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 9. QA DASHBOARD -->
+<div class="wf-section" id="wf-qa">
+<div class="wf-label">9. QA Office Dashboard — qa.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div><div class="wf-nav-link">QA Office</div></div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:1.1rem;font-weight:800">Quality Assurance Dashboard</div><div style="font-size:.78rem;color:#666;margin-top:.2rem">Logged in as: QA Office (Read-Only Access)</div></div>
+      <div style="display:flex;gap:.5rem"><div class="wf-btn sm">Print / Export Report</div><div class="wf-btn sm" style="background:#888">Logout</div></div>
+    </div>
+    <div style="background:#f0f0f0;border:1.5px solid #aaa;border-radius:3px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;color:#333"><strong>Read-Only Access:</strong> The QA Office can monitor and generate reports only. Attendance records cannot be edited.</div>
+    <div class="wf-grid3" style="margin-bottom:1.25rem">
+      <div class="wf-stat"><div class="v">12</div><div class="l">Total Lectures</div></div>
+      <div class="wf-stat"><div class="v">48</div><div class="l">Total Attendances</div></div>
+      <div class="wf-stat"><div class="v">4</div><div class="l">Active Lecturers</div></div>
+    </div>
+    <div class="wf-tabs">
+      <div class="wf-tab active">Analytics</div>
+      <div class="wf-tab">Course Reports</div>
+      <div class="wf-tab">Teaching Summary</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;margin-bottom:1rem">
+      <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1.1rem">12</div><div class="l" style="font-size:.62rem">LECTURES</div></div>
+      <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1.1rem">48</div><div class="l" style="font-size:.62rem">ATTENDANCES</div></div>
+      <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1.1rem">85</div><div class="l" style="font-size:.62rem">STUDENTS</div></div>
+      <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1.1rem">6</div><div class="l" style="font-size:.62rem">COURSES</div></div>
+      <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1.1rem">72%</div><div class="l" style="font-size:.62rem">RATE</div></div>
+      <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1.1rem">5</div><div class="l" style="font-size:.62rem">AT RISK</div></div>
+    </div>
+    <div class="wf-grid2" style="margin-bottom:.75rem">
+      <div class="wf-card" style="padding:.75rem"><div class="wf-section-head">Attendance Trend (Last 30 Days)</div><div class="wf-chart">[ Line Chart — Daily Attendance Count ]</div></div>
+      <div class="wf-card" style="padding:.75rem"><div class="wf-section-head">Course Attendance Rate Distribution</div><div class="wf-chart">[ Donut Chart — High / Medium / Low ]</div></div>
+    </div>
+    <div class="wf-grid2" style="margin-bottom:.75rem">
+      <div class="wf-card" style="padding:.75rem"><div class="wf-section-head">Attendance Rate by Course</div><div class="wf-chart">[ Horizontal Bar Chart — Course Rates % ]</div></div>
+      <div class="wf-card" style="padding:.75rem"><div class="wf-section-head">Attendance by Hour of Day</div><div class="wf-chart">[ Bar Chart — Hourly Scan Distribution ]</div></div>
+    </div>
+    <div class="wf-card" style="padding:.75rem;margin-bottom:.75rem">
+      <div class="wf-section-head">Lecturer Performance Overview</div>
+      <div class="wf-chart" style="height:100px">[ Grouped Bar — Lectures Created / Total Scans / Avg Attendance ]</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-section-head">At-Risk Students (Below 75% Attendance)</div>
+      <table class="wf-table">
+        <thead><tr><th>Student</th><th>Reg Number</th><th>Course</th><th>Attended</th><th>Attendance %</th></tr></thead>
+        <tbody>
+          <tr><td>Moses Tandu</td><td>24/BCC/BU/R/0016</td><td>BSEC1101 — Information Systems</td><td>2/8</td><td><div class="wf-badge">25%</div></td></tr>
+          <tr><td>Kunar Izzat</td><td>24/BIT/BU/R/0016</td><td>BSEC1102 — Fundamentals of Computer</td><td>4/8</td><td><div class="wf-badge">50%</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card secondary">
+      <div class="wf-card-title">Course Reports (Tab Preview)</div>
+      <div class="wf-card-sub">Select a course to view the full report — lecturer, enrolled students, attendance per student, and lecture history.</div>
+      <div class="wf-input" style="max-width:400px;margin-bottom:.75rem">BSEC1101 — Information Systems · John William</div>
+      <div style="background:#444;color:#fff;border-radius:4px;padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <div><div style="font-size:.95rem;font-weight:800">BSEC1101 — Information Systems</div><div style="font-size:.75rem;opacity:.8">John William · Semester 1 2025/2026 · 5 Lectures · 20 Students</div></div>
+        <div class="wf-btn sm" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4)">Print / Export</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:.75rem">
+        <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1rem">5</div><div class="l" style="font-size:.62rem">LECTURES</div></div>
+        <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1rem">20</div><div class="l" style="font-size:.62rem">STUDENTS</div></div>
+        <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1rem">68%</div><div class="l" style="font-size:.62rem">AVG RATE</div></div>
+        <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1rem">3.4</div><div class="l" style="font-size:.62rem">AVG ATTENDED</div></div>
+        <div class="wf-stat" style="padding:.5rem"><div class="v" style="font-size:1rem">4</div><div class="l" style="font-size:.62rem">AT RISK</div></div>
+      </div>
+      <div class="wf-section-head">Student Attendance</div>
+      <table class="wf-table">
+        <thead><tr><th>Student Name</th><th>Reg Number</th><th>Attended</th><th>Total Lectures</th><th>Percentage</th></tr></thead>
+        <tbody>
+          <tr><td>Moses Tandu</td><td>24/BCC/BU/R/0016</td><td>3</td><td>5</td><td>60%</td></tr>
+          <tr><td>Kunar Izzat</td><td>24/BIT/BU/R/0016</td><td>5</td><td>5</td><td>100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card secondary">
+      <div class="wf-card-title">Teaching Summary (Tab Preview)</div>
+      <div style="border:1.5px solid #aaa;border-radius:4px;overflow:hidden;margin-bottom:.75rem">
+        <div style="background:#444;color:#fff;padding:.75rem 1rem;display:flex;justify-content:space-between">
+          <div><div style="font-size:.95rem;font-weight:800">John William</div><div style="font-size:.75rem;opacity:.7;font-family:monospace">LEC/BU/001</div><div style="font-size:.72rem;opacity:.65;margin-top:.2rem">Last lecture: 14 Apr 2026</div></div>
+          <div style="display:flex;flex-direction:column;gap:.3rem;align-items:flex-end"><div class="wf-badge" style="background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.4)">Active</div><div class="wf-badge" style="background:rgba(255,255,255,.15);color:#fff">Excellent</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;padding:.6rem 1rem;background:#f5f5f5;border-bottom:1px solid #ccc">
+          <div class="wf-stat" style="padding:.4rem"><div class="v" style="font-size:1rem">8</div><div class="l" style="font-size:.62rem">LECTURES</div></div>
+          <div class="wf-stat" style="padding:.4rem"><div class="v" style="font-size:1rem">2</div><div class="l" style="font-size:.62rem">COURSES</div></div>
+          <div class="wf-stat" style="padding:.4rem"><div class="v" style="font-size:1rem">64</div><div class="l" style="font-size:.62rem">SCANS</div></div>
+          <div class="wf-stat" style="padding:.4rem"><div class="v" style="font-size:1rem">30</div><div class="l" style="font-size:.62rem">STUDENTS</div></div>
+          <div class="wf-stat" style="padding:.4rem"><div class="v" style="font-size:1rem">8.0</div><div class="l" style="font-size:.62rem">AVG/LEC</div></div>
+        </div>
+        <div style="padding:.6rem 1rem">
+          <div class="wf-section-head" style="margin-bottom:.5rem">Course Performance</div>
+          <table class="wf-table">
+            <thead><tr><th>Course</th><th>Semester</th><th>Lectures</th><th>Students</th><th>Engagement</th></tr></thead>
+            <tbody>
+              <tr><td>BSEC1101 — Information Systems</td><td>Semester 1 2025/2026</td><td>5</td><td>20</td><td>80%</td></tr>
+              <tr><td>BSEC1102 — Fundamentals of Computer</td><td>Semester 1 2025/2026</td><td>3</td><td>15</td><td>75%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html><!-- 5. STUDENT DASHBOARD -->
+<div class="wf-section" id="wf-student">
+<div class="wf-label">5. Student Dashboard — dashboard.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div><div class="wf-nav-link">My Attendance</div></div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:1.1rem;font-weight:800">My Attendance</div><div style="font-size:.78rem;color:#666;margin-top:.2rem">Moses Tandu — Reg: 24/BCC/BU/R/0016</div></div>
+      <div class="wf-btn sm">Logout</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Scan QR Code</div>
+      <div class="wf-card-sub">Point your camera at the QR code displayed by your lecturer to mark attendance.</div>
+      <div class="wf-img" style="height:160px;margin-bottom:.75rem">[ Camera / QR Reader Area ]</div>
+      <div style="text-align:center"><div class="wf-btn">Start Camera Scanner</div></div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Fingerprint Setup</div>
+      <div class="wf-card-sub">No fingerprint registered. Register your fingerprint to enable biometric attendance verification.</div>
+      <div class="wf-btn sm">Register Fingerprint</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Attendance by Course</div>
+      <table class="wf-table">
+        <thead><tr><th>Course</th><th>Lecturer</th><th>Attended</th><th>Total</th><th>%</th><th>Progress</th></tr></thead>
+        <tbody>
+          <tr><td>BSEC1101 — Information Systems</td><td>John William</td><td>3</td><td>5</td><td>60%</td><td><div style="height:7px;background:#aaa;border-radius:3px;width:60%"></div></td></tr>
+          <tr><td>BSEC1102 — Fundamentals of Computer</td><td>Solomon Bbale</td><td>4</td><td>4</td><td>100%</td><td><div style="height:7px;background:#444;border-radius:3px;width:100%"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">My Courses</div>
+      <div class="wf-card-sub">Select a course below to request enrollment. Your request will be reviewed by the admin.</div>
+      <div class="row">
+        <div class="col"><div class="wf-input">-- Select a course to request --</div></div>
+        <div class="wf-btn sm">Request Enrollment</div>
+      </div>
+      <div class="wf-section-head" style="margin-top:.75rem">Pending Approval</div>
+      <table class="wf-table">
+        <thead><tr><th>Code</th><th>Course Name</th><th>Semester</th><th>Requested</th></tr></thead>
+        <tbody><tr><td>BSEC1103</td><td>Database Systems</td><td>Semester 1 2025/2026</td><td>07 Apr 2026</td></tr></tbody>
+      </table>
+      <div class="wf-section-head" style="margin-top:.75rem">Enrolled Courses</div>
+      <table class="wf-table">
+        <thead><tr><th>Code</th><th>Course Name</th><th>Lecturer</th><th>Semester</th></tr></thead>
+        <tbody>
+          <tr><td>BSEC1101</td><td>Information Systems</td><td>John William</td><td>Semester 1 2025/2026</td></tr>
+          <tr><td>BSEC1102</td><td>Fundamentals of Computer</td><td>Solomon Bbale</td><td>Semester 1 2025/2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <div class="wf-card-title" style="margin:0">Attendance Records</div>
+        <div class="wf-btn sm">Print Attendance Report</div>
+      </div>
+      <table class="wf-table">
+        <thead><tr><th>Course</th><th>Lecture</th><th>Period</th><th>Scanned At</th><th>Location</th></tr></thead>
+        <tbody>
+          <tr><td>BSEC1101</td><td>Introduction to IS</td><td>Mon 8:00-10:00 AM</td><td>07 Apr 2026 08:15</td><td>In class</td></tr>
+          <tr><td>BSEC1102</td><td>Computer Basics</td><td>Tue 10:00-12:00 PM</td><td>06 Apr 2026 10:05</td><td>In class</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Rate Your Lecturer</div>
+      <div class="wf-card-sub">Rate your lecturer out of 10 using stars for each enrolled course.</div>
+      <div style="border:1px solid #ccc;border-radius:3px;padding:.75rem;margin-bottom:.6rem">
+        <div style="font-weight:700;margin-bottom:.2rem">BSEC1101 — Information Systems</div>
+        <div style="font-size:.78rem;color:#666;margin-bottom:.5rem">Lecturer: John William</div>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <span style="font-size:1.4rem;letter-spacing:2px;color:#aaa">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span style="font-size:.78rem;color:#666">Select rating (1–10)</span>
+          <div class="wf-btn sm">Submit</div>
+        </div>
+      </div>
+      <div style="border:1px solid #ccc;border-radius:3px;padding:.75rem">
+        <div style="font-weight:700;margin-bottom:.2rem">BSEC1102 — Fundamentals of Computer</div>
+        <div style="font-size:.78rem;color:#666;margin-bottom:.5rem">Lecturer: Solomon Bbale</div>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <span style="font-size:1.4rem;letter-spacing:2px;color:#aaa">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span style="font-size:.78rem;color:#666">Select rating (1–10)</span>
+          <div class="wf-btn sm">Submit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 6. SCAN PAGE -->
+<div class="wf-section" id="wf-scan">
+<div class="wf-label">6. Scan Page — scan.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div></div>
+  </div>
+  <div class="wf-body" style="max-width:500px;margin:0 auto">
+    <div class="wf-card" style="text-align:center">
+      <div class="wf-card-title">Scan QR Code</div>
+      <div class="wf-card-sub">Point your camera at the QR code displayed by your lecturer.</div>
+      <div class="wf-img" style="height:220px;margin-bottom:.75rem">[ Camera / QR Scan Area ]</div>
+      <div style="font-size:.82rem;color:#555;margin-bottom:.4rem">GPS Status: Getting your location...</div>
+      <div style="font-size:.82rem;color:#555;margin-bottom:.75rem">Biometric: Fingerprint verification required</div>
+      <div class="wf-btn">Start Camera Scanner</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Scan Result</div>
+      <div style="border:1.5px solid #aaa;border-radius:3px;padding:.65rem;font-size:.82rem;color:#444;text-align:center">Attendance recorded! Introduction to IS — Mon 8:00-10:00 AM</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 7. LECTURER DASHBOARD -->
+<div class="wf-section" id="wf-lecturer">
+<div class="wf-label">7. Lecturer Dashboard — lecturer.html</div>
+<div class="wf-frame">
+  <div class="wf-nav">
+    <div class="wf-logo-txt">BU Attendance Portal</div>
+    <div class="wf-nav-links"><div class="wf-nav-link">Home</div><div class="wf-nav-link">About</div><div class="wf-nav-link">Contact</div><div class="wf-nav-link">Lecturer</div></div>
+  </div>
+  <div class="wf-body">
+    <div class="wf-card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:1.1rem;font-weight:800">Lecturer Dashboard</div><div style="font-size:.78rem;color:#666;margin-top:.2rem">Logged in as: John William (Lecturer)</div></div>
+      <div class="wf-btn sm">Logout</div>
+    </div>
+    <div class="wf-tabs">
+      <div class="wf-tab active">Lectures &amp; QR</div>
+      <div class="wf-tab">My Courses</div>
+      <div class="wf-tab">Student Attendance</div>
+      <div class="wf-tab">All Records</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">Create New Lecture</div>
+      <div class="wf-grid2">
+        <div>
+          <label>Course</label><div class="wf-input">-- Select a course --</div>
+          <label>Lecture Title</label><div class="wf-input">e.g. Introduction to Programming</div>
+          <label>Period / Time</label><div class="wf-input">e.g. Monday 8:00-10:00 AM</div>
+          <label>QR Expires At (optional)</label><div class="wf-input">Date &amp; time picker</div>
+        </div>
+        <div>
+          <label>Classroom Location</label>
+          <div class="wf-img" style="height:130px;margin-bottom:.5rem">[ Map — Click to set GPS location ]</div>
+          <div class="wf-grid2" style="gap:.4rem">
+            <div><label style="font-size:.7rem">Latitude</label><div class="wf-input" style="height:26px;font-size:.7rem">Auto-detected</div></div>
+            <div><label style="font-size:.7rem">Longitude</label><div class="wf-input" style="height:26px;font-size:.7rem">Auto-detected</div></div>
+          </div>
+          <label>Allowed Radius (meters)</label><div class="wf-input">500</div>
+        </div>
+      </div>
+      <div class="wf-btn">Generate QR Code</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-title">All Lectures</div>
+      <table class="wf-table">
+        <thead><tr><th>Course</th><th>Title</th><th>Period</th><th>Scans</th><th>Expires</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td>BSEC1101</td><td>Introduction to IS</td><td>Mon 8:00-10:00 AM</td><td>12</td><td>Never</td><td><div style="display:flex;gap:.3rem"><div class="wf-btn sm" style="height:22px">Show QR</div><div class="wf-btn sm" style="height:22px;background:#888">Delete</div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card secondary">
+      <div class="wf-card-title">Student Attendance — Per Course (Tab Preview)</div>
+      <div style="border:1.5px solid #aaa;border-radius:4px;overflow:hidden;margin-bottom:.75rem">
+        <div style="background:#444;color:#fff;padding:.65rem 1rem;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:.9rem;font-weight:800">BSEC1101 — Information Systems</div><div style="font-size:.75rem;opacity:.8">Semester 1 2025/2026 &nbsp;·&nbsp; 3 students &nbsp;·&nbsp; 5 lectures</div></div>
+          <div class="wf-btn sm" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4)">Print / Export</div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 100px 80px 120px;gap:.5rem;padding:.45rem 1rem;background:#eee;font-size:.72rem;font-weight:800;border-bottom:1px solid #ccc">
+          <span>STUDENT</span><span>REG NUMBER</span><span>LECTURES</span><span>%</span><span>PROGRESS</span>
+        </div>
+        <div style="padding:.55rem 1rem;display:grid;grid-template-columns:2fr 1.5fr 100px 80px 120px;gap:.5rem;align-items:center;font-size:.78rem;border-bottom:1px solid #eee">
+          <span style="font-weight:700">Kunar Izzat</span><span style="font-family:monospace;font-size:.75rem">24/BIT/BU/R/0016</span><span>5/5</span><span><div class="wf-badge">100%</div></span><span><div style="height:6px;background:#444;border-radius:3px"></div></span>
+        </div>
+        <div style="padding:.55rem 1rem;display:grid;grid-template-columns:2fr 1.5fr 100px 80px 120px;gap:.5rem;align-items:center;font-size:.78rem">
+          <span style="font-weight:700">Moses Tandu</span><span style="font-family:monospace;font-size:.75rem">24/BCC/BU/R/0016</span><span>3/5</span><span><div class="wf-badge">60%</div></span><span><div style="height:6px;background:#aaa;border-radius:3px;width:60%"></div></span>
+        </div>
+      </div>
+    </div>
+    <div class="wf-card secondary">
+      <div class="wf-card-title">Rate Students (Tab Preview)</div>
+      <div class="wf-card-sub">Rate each enrolled student out of 10 using stars per course.</div>
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid #ddd">BSEC1101 — Information Systems</div>
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding:.4rem 0;border-bottom:1px solid #f5f5f5">
+        <span style="min-width:130px;font-weight:600;font-size:.82rem">Kunar Izzat</span>
+        <span style="font-family:monospace;font-size:.75rem;color:#666;min-width:120px">24/BIT/BU/R/0016</span>
+        <span style="font-size:1.2rem;letter-spacing:2px;color:#aaa">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span style="font-size:.72rem;color:#888">8/10</span>
+        <div class="wf-btn sm">Rate</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding:.4rem 0">
+        <span style="min-width:130px;font-weight:600;font-size:.82rem">Moses Tandu</span>
+        <span style="font-family:monospace;font-size:.75rem;color:#666;min-width:120px">24/BCC/BU/R/0016</span>
+        <span style="font-size:1.2rem;letter-spacing:2px;color:#aaa">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span style="font-size:.72rem;color:#888">Select rating</span>
+        <div class="wf-btn sm">Rate</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

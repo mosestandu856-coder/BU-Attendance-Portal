@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BU Attendance Portal – Site Map</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#111;padding:2.5rem 1rem}
+
+/* ── Typography ── */
+h1{text-align:center;font-size:1.6rem;font-weight:700;letter-spacing:.5px;margin-bottom:.4rem}
+.subtitle{text-align:center;font-size:.85rem;color:#555;margin-bottom:2.5rem;letter-spacing:.3px}
+
+/* ── Node boxes ── */
+.node{
+  display:inline-flex;align-items:center;justify-content:center;
+  border:2px solid #111;border-radius:6px;
+  padding:.4rem 1.1rem;font-size:.8rem;font-weight:600;
+  background:#fff;white-space:nowrap;text-align:center;
+  min-width:110px;letter-spacing:.2px;
+}
+.node.root{font-size:1.05rem;font-weight:700;min-width:180px;padding:.55rem 1.4rem;border-width:2.5px}
+.node.l1{font-size:.85rem;font-weight:700;min-width:120px;border-width:2px}
+.node.ctrl{font-size:.72rem;min-width:90px;border-width:1.5px}
+.node.sub{font-size:.72rem;min-width:100px;border-width:1.5px}
+.node.subsub{font-size:.68rem;min-width:90px;border-width:1px;border-color:#444}
+
+/* ── Connectors ── */
+.dn{display:flex;flex-direction:column;align-items:center}
+.dn .line{width:1.5px;background:#555}
+.dn .line.s{height:14px}
+.dn .line.m{height:22px}
+.dn .line.l{height:30px}
+/* Open chevron arrowhead */
+.dn .arr{
+  width:9px;height:9px;
+  border-right:1.5px solid #555;
+  border-bottom:1.5px solid #555;
+  transform:rotate(45deg);
+  margin-top:-5px;
+}
+
+/* ── Layout ── */
+.tree{display:flex;flex-direction:column;align-items:center}
+.hbar{height:1.5px;background:#555}
+.row{display:flex;align-items:flex-start;justify-content:center;position:relative}
+.col{display:flex;flex-direction:column;align-items:center}
+
+/* ── Sub-item stacks ── */
+.stack{display:flex;flex-direction:column;align-items:flex-start}
+.srow{display:flex;align-items:center}
+.srow .tick{width:16px;height:1.5px;background:#555;flex-shrink:0}
+.srow .node{margin:0}
+
+.ssrow{display:flex;align-items:center}
+.ssrow .tick{width:12px;height:1px;background:#777;flex-shrink:0}
+.ssrow .node{margin:0}
+
+/* ── Spacing helpers ── */
+.gap2{height:2px}
+.gap4{height:4px}
+.gap6{height:6px}
+.ml14{margin-left:14px}
+.ml10{margin-left:10px}
+
+/* ── Print ── */
+@media print{body{padding:1rem}h1{font-size:1.2rem}}
+</style>
+</head>
+<body>
+
+<h1>BU Attendance Portal</h1>
+<p class="subtitle">System Site Map &nbsp;|&nbsp; Lecture Attendance Management System</p>
+
+<div class="tree">
+
+  <!-- ══ ADMIN (System Controller) ══ -->
+  <div class="node root">Admin (System Controller)</div>
+  <div class="dn"><div class="line m"></div><div class="arr"></div></div>
+
+  <!-- Admin control row -->
+  <div style="position:relative;display:flex;align-items:flex-start;justify-content:center;">
+    <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);height:1.5px;background:#555;width:76%;"></div>
+    <div class="col" style="margin:0 .9rem;"><div class="dn"><div class="line s"></div><div class="arr"></div></div><div class="node ctrl">Manage Users</div></div>
+    <div class="col" style="margin:0 .9rem;"><div class="dn"><div class="line s"></div><div class="arr"></div></div><div class="node ctrl">Manage Lectures</div></div>
+    <div class="col" style="margin:0 .9rem;"><div class="dn"><div class="line s"></div><div class="arr"></div></div><div class="node ctrl">View All Records</div></div>
+    <div class="col" style="margin:0 .9rem;"><div class="dn"><div class="line s"></div><div class="arr"></div></div><div class="node ctrl">System Settings</div></div>
+  </div>
+
+  <div class="dn"><div class="line l"></div><div class="arr"></div></div>
+
+  <!-- ══ HOMEPAGE ══ -->
+  <div class="node root">Homepage</div>
+  <div class="dn"><div class="line m"></div><div class="arr"></div></div>
+
+  <!-- ══ LEVEL 1 BRANCHES ══ -->
+  <div style="position:relative;display:flex;align-items:flex-start;justify-content:center;">
+    <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);height:1.5px;background:#555;width:90%;"></div>
+
+    <!-- PUBLIC PAGES -->
+    <div class="col" style="margin:0 1rem;">
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="node l1">Public Pages</div>
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="stack">
+        <div class="srow"><div class="tick"></div><div class="node sub">About</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Contact</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">How It Works</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="ml10 stack">
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">1. Register Account</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">2. Register Fingerprint</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">3. Lecturer Creates QR</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">4. Student Scans QR</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">5. Fingerprint Verified</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">6. Attendance Recorded</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTH -->
+    <div class="col" style="margin:0 1rem;">
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="node l1">Auth</div>
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="stack">
+        <div class="srow"><div class="tick"></div><div class="node sub">Login</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Register</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="ml10 stack">
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Account Details</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Fingerprint Setup</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENT -->
+    <div class="col" style="margin:0 1rem;">
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="node l1">Student</div>
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="stack">
+        <div class="srow"><div class="tick"></div><div class="node sub">Dashboard</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="ml10 stack">
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">QR Scanner</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Attendance Stats</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Records History</div></div>
+        </div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Scan Page</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Fingerprint Verify</div></div>
+      </div>
+    </div>
+
+    <!-- LECTURER -->
+    <div class="col" style="margin:0 1rem;">
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="node l1">Lecturer</div>
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="stack">
+        <div class="srow"><div class="tick"></div><div class="node sub">Lectures &amp; QR</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="ml10 stack">
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Create Lecture</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Generate QR Code</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Set Location</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Delete Lecture</div></div>
+        </div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Students</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="ml10 stack">
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Attendance Summary</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Edit / Delete Student</div></div>
+        </div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">All Records</div></div>
+      </div>
+    </div>
+
+    <!-- QA OFFICE -->
+    <div class="col" style="margin:0 1rem;">
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="node l1">QA Office</div>
+      <div class="dn"><div class="line s"></div><div class="arr"></div></div>
+      <div class="stack">
+        <div class="srow"><div class="tick"></div><div class="node sub">QA Dashboard</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="ml10 stack">
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Lecturer Reports</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Classes Taught</div></div>
+          <div class="dn ml10"><div class="line s"></div><div class="arr"></div></div>
+          <div class="ssrow"><div class="tick"></div><div class="node subsub">Download Reports</div></div>
+        </div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Summary Report</div></div>
+        <div class="dn ml14"><div class="line s"></div><div class="arr"></div></div>
+        <div class="srow"><div class="tick"></div><div class="node sub">Monitor Only</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top:3rem;padding-top:1rem;border-top:1px solid #ddd;text-align:center;font-size:.75rem;color:#777;">
+  BU Attendance Portal &nbsp;·&nbsp; Site Map &nbsp;·&nbsp;
+  <a href="/sitemap.html" style="color:#555;text-decoration:underline;">View Original</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,859 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Attendance</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .pct-bar { height: 10px; background: var(--border-color); border-radius: 99px; overflow: hidden; margin-top: .25rem; }
+    .pct-fill { height: 100%; border-radius: 99px; transition: width .5s; background: var(--primary-color); }
+    .pct-ok   { background: #16a34a; }
+    .pct-warn { background: #f59e0b; }
+    .pct-danger { background: #dc2626; }
+    .badge-valid   { color: #15803d; font-weight: 600; }
+    .badge-invalid { color: #dc2626; font-weight: 600; }
+    #qr-reader { width: 100%; max-width: 400px; margin: 0 auto; }
+    #qr-reader video { border-radius: var(--border-radius); }
+    .scan-result { padding: 1rem; border-radius: var(--border-radius); text-align: center; font-weight: 600; margin-top: 1rem; }
+    .scan-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .scan-error   { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .scan-info    { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .error-msg { color: #dc2626; font-size: .9rem; min-height: 1.2em; }
+    .success-msg { color: #15803d; font-size: .9rem; min-height: 1.2em; }
+    @media(max-width:600px){ .stats-grid{ grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/dashboard.html">My Attendance</a>
+  </nav>
+  <main>
+    <section class="card">
+      <h1>My Attendance</h1>
+      <p id="dashboard-user" style="color:var(--text-muted);"></p>
+      <button id="logout-btn">Logout</button>
+    </section>
+
+    <!-- QR Scanner -->
+    <section class="card">
+      <h2>Scan QR Code</h2>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Point your camera at the QR code displayed by your lecturer to mark attendance.</p>
+      <div id="qr-reader" style="position:relative;width:100%;max-width:400px;margin:0 auto;background:#000;border-radius:12px;overflow:hidden;display:none;">
+        <video id="qr-video" autoplay playsinline muted style="width:100%;display:block;"></video>
+        <canvas id="qr-canvas" style="display:none;"></canvas>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+          <div style="width:220px;height:220px;border:3px solid #2563eb;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.45);"></div>
+        </div>
+      </div>
+      <div id="scan-result"></div>
+      <div style="text-align:center;margin-top:1rem;">
+        <button id="start-scan-btn">Start Camera Scanner</button>
+        <button id="stop-scan-btn" style="display:none;" class="btn-gray">Stop Scanner</button>
+      </div>
+    </section>
+
+    <!-- Fingerprint Setup -->
+    <section class="card" id="biometric-card">
+      <h2>Biometric Setup</h2>
+      <p id="biometric-status" style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;"></p>
+      <button id="register-biometric-btn" style="display:none;">Register Biometric (Face ID / Fingerprint)</button>
+    </section>
+
+    <!-- Fingerprint Verification Modal -->
+    <div id="fingerprint-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;flex-direction:column;">
+      <div style="background:#1e293b;border-radius:20px;padding:2.5rem 2rem;text-align:center;max-width:320px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+        <div id="fp-icon" style="width:100px;height:100px;margin:0 auto 1.5rem;position:relative;">
+          <svg id="bio-icon-fp" viewBox="0 0 100 100" style="width:100%;height:100%;">
+            <defs>
+              <linearGradient id="fpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#2563eb"/>
+                <stop offset="100%" style="stop-color:#7c3aed"/>
+              </linearGradient>
+            </defs>
+            <g id="fp-lines" stroke="url(#fpGrad)" stroke-width="2.5" fill="none" stroke-linecap="round">
+              <path d="M50 15 C30 15, 15 30, 15 50 C15 70, 30 85, 50 85 C70 85, 85 70, 85 50 C85 30, 70 15, 50 15"/>
+              <path d="M50 22 C34 22, 22 34, 22 50 C22 66, 34 78, 50 78 C66 78, 78 66, 78 50 C78 34, 66 22, 50 22"/>
+              <path d="M50 29 C38 29, 29 38, 29 50 C29 62, 38 71, 50 71 C62 71, 71 62, 71 50 C71 38, 62 29, 50 29"/>
+              <path d="M50 36 C42 36, 36 42, 36 50 C36 58, 42 64, 50 64 C58 64, 64 58, 64 50 C64 42, 58 36, 50 36"/>
+              <path d="M50 43 C46 43, 43 46, 43 50 C43 54, 46 57, 50 57 C54 57, 57 54, 57 50 C57 46, 54 43, 50 43"/>
+              <circle cx="50" cy="50" r="3" fill="url(#fpGrad)" stroke="none"/>
+            </g>
+            <line id="fp-scan-line" x1="15" y1="50" x2="85" y2="50" stroke="#2563eb" stroke-width="2" opacity="0.8"/>
+          </svg>
+          <!-- Face ID icon (iOS) -->
+          <svg id="bio-icon-face" viewBox="0 0 100 100" style="width:100%;height:100%;display:none;position:absolute;top:0;left:0;">
+            <defs><linearGradient id="faceGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2563eb"/><stop offset="100%" style="stop-color:#7c3aed"/></linearGradient></defs>
+            <g stroke="url(#faceGrad)" stroke-width="3" fill="none" stroke-linecap="round">
+              <path d="M20 38 L20 22 L38 22" stroke-width="4"/>
+              <path d="M62 22 L80 22 L80 38" stroke-width="4"/>
+              <path d="M80 62 L80 78 L62 78" stroke-width="4"/>
+              <path d="M38 78 L20 78 L20 62" stroke-width="4"/>
+              <circle cx="37" cy="44" r="4" fill="url(#faceGrad)" stroke="none"/>
+              <circle cx="63" cy="44" r="4" fill="url(#faceGrad)" stroke="none"/>
+              <path d="M50 48 L47 57 Q50 60 53 57 Z" fill="url(#faceGrad)" stroke="none"/>
+              <path d="M37 66 Q50 76 63 66"/>
+            </g>
+          </svg>
+        </div>
+        <h3 id="fp-title" style="color:#fff;margin-bottom:.5rem;font-size:1.1rem;">Biometric Verification</h3>
+        <p id="fp-subtitle" style="color:#94a3b8;font-size:.85rem;margin-bottom:1.5rem;"></p>
+        <div id="fp-progress" style="height:4px;background:#334155;border-radius:99px;overflow:hidden;margin-bottom:1rem;">
+          <div id="fp-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .3s;"></div>
+        </div>
+        <p id="fp-status" style="color:#64748b;font-size:.8rem;"></p>
+        <button id="fp-cancel-btn" class="btn-secondary" style="margin-top:1rem;">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Per-course attendance stats -->
+    <section class="card">
+      <h2>Attendance by Course</h2>
+      <div id="course-stats-container">Loading...</div>
+    </section>
+
+    <!-- My Courses / Enroll -->
+    <section class="card">
+      <h2>My Courses</h2>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Select a course below to request enrollment. Your request will be reviewed by the admin.</p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <select id="enroll-select" style="flex:1;min-width:200px;padding:.6rem .85rem;border:1px solid var(--border-color);border-radius:var(--border-radius);font-size:1rem;background:var(--surface-color);color:var(--text-color);">
+          <option value="">-- Select a course to request --</option>
+        </select>
+        <button id="enroll-btn">Request Enrollment</button>
+      </div>
+      <p class="error-msg" id="enroll-error"></p>
+      <p class="success-msg" id="enroll-success"></p>
+
+      <!-- Pending requests -->
+      <div id="pending-courses-section" style="margin-bottom:1.25rem;display:none;">
+        <h3 style="font-size:1rem;margin-bottom:.5rem;color:var(--text-muted);">Pending Approval</h3>
+        <div id="pending-courses-container"></div>
+      </div>
+
+      <!-- Approved courses -->
+      <h3 style="font-size:1rem;margin-bottom:.5rem;">Enrolled Courses</h3>
+      <div id="my-courses-container">Loading...</div>
+    </section>
+
+    <!-- Rate Your Lecturer -->
+    <section class="card" id="rate-lecturer-section" style="display:none;">
+      <h2>Rate Your Lecturer</h2>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Rate your lecturer out of 10 for each enrolled course.</p>
+      <div id="rate-lecturer-container">Loading...</div>
+    </section>
+
+    <section class="card">
+      <h2>Attendance Records</h2>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+        <button id="print-attendance-btn">Print Attendance Report</button>
+      </div>
+      <div id="attendance-container">Loading...</div>
+    </section>
+  </main>
+
+  <script src="/js/nav.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script>
+    console.log('Dashboard script loaded');
+    console.log('User Agent:', navigator.userAgent);
+
+    let scanning = false;
+    let scanDone = false;
+    let videoStream = null;
+    let scanInterval = null;
+
+    function setResult(msg, type) {
+      document.getElementById('scan-result').innerHTML =
+        `<div class="scan-result scan-${type}">${msg}</div>`;
+    }
+
+    // ── Biometric helpers ──────────────────────────────────────────────────────
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const bioLabel = isIOS ? 'Face ID' : 'Fingerprint';
+
+    // Set correct icon on page load
+    if (isIOS) {
+      const fpIcon = document.getElementById('bio-icon-fp');
+      const faceIcon = document.getElementById('bio-icon-face');
+      if (fpIcon) fpIcon.style.display = 'none';
+      if (faceIcon) faceIcon.style.display = 'block';
+    }
+
+    function bufferToBase64url(buffer) {
+      return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+    function base64urlToBuffer(b64) {
+      const b = b64.replace(/-/g, '+').replace(/_/g, '/');
+      return Uint8Array.from(atob(b), c => c.charCodeAt(0)).buffer;
+    }
+
+    async function checkBiometricStatus() {
+      if (!window.PublicKeyCredential) {
+        document.getElementById('biometric-card').style.display = 'none';
+        return;
+      }
+      const res = await fetch('/api/auth/webauthn/status');
+      const { registered } = await res.json();
+      const statusEl = document.getElementById('biometric-status');
+      const btn = document.getElementById('register-biometric-btn');
+      if (registered) {
+        statusEl.textContent = `${bioLabel} registered. You will be prompted to verify when scanning.`;
+        btn.style.display = 'none';
+      } else {
+        statusEl.textContent = `No ${bioLabel} registered. Register your ${bioLabel} to enable biometric attendance verification.`;
+        btn.style.display = 'inline-block';
+        btn.textContent = `Register ${bioLabel}`;
+      }
+    }
+
+    async function registerBiometric() {
+      showFpModal(`Register ${bioLabel}`, `Use ${bioLabel} when prompted`, '');
+      try {
+        const res = await fetch('/api/auth/webauthn/register-challenge');
+        const { challenge, userId, username } = await res.json();
+        const credential = await navigator.credentials.create({
+          publicKey: {
+            challenge: base64urlToBuffer(challenge),
+            rp: { name: 'BU Attendance Portal' },
+            user: {
+              id: new TextEncoder().encode(String(userId)),
+              name: username,
+              displayName: username
+            },
+            pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+            authenticatorSelection: {
+              authenticatorAttachment: 'platform',
+              userVerification: 'required',
+              residentKey: 'preferred'
+            },
+            timeout: 60000
+          }
+        });
+        const credentialId = bufferToBase64url(credential.rawId);
+        const publicKey = bufferToBase64url(credential.response.getPublicKey
+          ? credential.response.getPublicKey()
+          : credential.response.attestationObject);
+        const saveRes = await fetch('/api/auth/webauthn/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credentialId, publicKey })
+        });
+        if (saveRes.ok) {
+          setFpSuccess();
+          setTimeout(() => { hideFpModal(); checkBiometricStatus(); }, 1500);
+        } else {
+          setFpError('Registration failed');
+          setTimeout(hideFpModal, 2000);
+        }
+      } catch (err) {
+        setFpError(err.message || 'Registration cancelled');
+        setTimeout(hideFpModal, 2000);
+      }
+    }
+
+    async function verifyBiometric() {
+      const res = await fetch('/api/auth/webauthn/auth-challenge');
+      const { challenge, credentialId, registered } = await res.json();
+      if (!registered) return true;
+      showFpModal(`${bioLabel} Verification`, `Use ${bioLabel} when prompted`, 'Waiting...');
+      try {
+        const assertion = await navigator.credentials.get({
+          publicKey: {
+            challenge: base64urlToBuffer(challenge),
+            allowCredentials: [{ type: 'public-key', id: base64urlToBuffer(credentialId) }],
+            userVerification: 'required',
+            timeout: 60000
+          }
+        });
+        const verifyRes = await fetch('/api/auth/webauthn/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credentialId: bufferToBase64url(assertion.rawId) })
+        });
+        const data = await verifyRes.json();
+        if (data.verified) {
+          setFpSuccess();
+          await new Promise(r => setTimeout(r, 1200));
+          hideFpModal();
+          return true;
+        } else {
+          setFpError('Fingerprint not recognized');
+          await new Promise(r => setTimeout(r, 2000));
+          hideFpModal();
+          return false;
+        }
+      } catch (err) {
+        setFpError('Verification failed or cancelled');
+        await new Promise(r => setTimeout(r, 2000));
+        hideFpModal();
+        return false;
+      }
+    }
+
+    // ── Fingerprint Modal ──────────────────────────────────────────────────────
+    let fpScanInterval = null;
+
+    function showFpModal(title, subtitle, status) {
+      document.getElementById('fp-title').textContent = title;
+      document.getElementById('fp-subtitle').textContent = subtitle || `Use ${bioLabel} when prompted`;
+      document.getElementById('fp-status').textContent = status || '';
+      document.getElementById('fp-progress-bar').style.width = '0%';
+      document.getElementById('fp-progress-bar').style.background = 'linear-gradient(90deg,#2563eb,#7c3aed)';
+      document.getElementById('fingerprint-modal').style.display = 'flex';
+      startFpAnimation();
+    }
+
+    function hideFpModal() {
+      document.getElementById('fingerprint-modal').style.display = 'none';
+      stopFpAnimation();
+    }
+
+    function setFpSuccess() {
+      document.getElementById('fp-progress-bar').style.width = '100%';
+      document.getElementById('fp-progress-bar').style.background = '#16a34a';
+      document.getElementById('fp-title').textContent = `${bioLabel} Verified`;
+      document.getElementById('fp-subtitle').textContent = 'Identity confirmed';
+      stopFpAnimation();
+    }
+
+    function setFpError(msg) {
+      document.getElementById('fp-progress-bar').style.background = '#dc2626';
+      document.getElementById('fp-progress-bar').style.width = '100%';
+      document.getElementById('fp-title').textContent = `${bioLabel} Failed`;
+      document.getElementById('fp-subtitle').textContent = msg || 'Verification failed';
+      stopFpAnimation();
+    }
+
+    function startFpAnimation() {
+      let progress = 0;
+      let scanY = 15;
+      let dir = 1;
+      const scanLine = document.getElementById('fp-scan-line');
+      const progressBar = document.getElementById('fp-progress-bar');
+      fpScanInterval = setInterval(() => {
+        scanY += dir * 2;
+        if (scanY >= 85) dir = -1;
+        if (scanY <= 15) dir = 1;
+        if (scanLine) { scanLine.setAttribute('y1', scanY); scanLine.setAttribute('y2', scanY); }
+        progress = Math.min(progress + 1, 80);
+        if (progressBar) progressBar.style.width = progress + '%';
+      }, 50);
+    }
+
+    function stopFpAnimation() {
+      if (fpScanInterval) { clearInterval(fpScanInterval); fpScanInterval = null; }
+    }
+
+    document.getElementById('fp-cancel-btn').addEventListener('click', () => {
+      hideFpModal();
+      setResult('Fingerprint verification cancelled.', 'error');
+      scanDone = false;
+    });
+
+    document.getElementById('register-biometric-btn').addEventListener('click', registerBiometric);
+
+    // ── QR Scan flow ───────────────────────────────────────────────────────────
+    async function doScan(token) {
+      if (scanDone) return;
+      scanDone = true;
+      stopScanner();
+
+      const statusRes = await fetch('/api/auth/webauthn/status');
+      const { registered } = await statusRes.json();
+
+      if (!registered) {
+        setResult('⚠️ You must register your fingerprint before scanning. Redirecting to registration...', 'error');
+        setTimeout(() => window.location.href = '/register.html?fp=1', 2500);
+        scanDone = false;
+        return;
+      }
+
+      if (window.PublicKeyCredential) {
+        setResult(`QR scanned! Please verify with ${bioLabel} to record attendance...`, 'info');
+        const verified = await verifyBiometric();
+        if (!verified) {
+          setResult('❌ Biometric verification failed. Attendance not recorded.', 'error');
+          scanDone = false;
+          return;
+        }
+      } else {
+        setResult('⚠️ Biometric not supported on this device. Attendance cannot be recorded.', 'error');
+        scanDone = false;
+        return;
+      }
+
+      setResult('Getting your location...', 'info');
+
+      function submitScan(lat, lng) {
+        fetch('/api/attendance/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, student_lat: lat, student_lng: lng, accuracy: lat ? 30 : 50 })
+        })
+        .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+        .then(({ ok, data }) => {
+          if (ok) {
+            setResult(`Attendance recorded!<br><strong>${data.lecture_title}</strong> — ${data.period}`, 'success');
+            loadAttendance();
+          } else {
+            setResult(data.error || 'Failed to record attendance.', 'error');
+          }
+          scanDone = false;
+        })
+        .catch(() => { setResult('Network error. Please try again.', 'error'); scanDone = false; });
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => submitScan(pos.coords.latitude, pos.coords.longitude),
+          ()  => submitScan(null, null),
+          { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
+        );
+      } else {
+        submitScan(null, null);
+      }
+    }
+
+    function startScanner() {
+      scanDone = false;
+      document.getElementById('scan-result').innerHTML = '';
+      document.getElementById('start-scan-btn').style.display = 'none';
+      document.getElementById('stop-scan-btn').style.display = 'inline-block';
+      document.getElementById('qr-reader').style.display = 'block';
+
+      const video = document.getElementById('qr-video');
+      const canvas = document.getElementById('qr-canvas');
+      const ctx = canvas.getContext('2d');
+
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      }).then(stream => {
+        videoStream = stream;
+        video.srcObject = stream;
+        video.play();
+        scanning = true;
+
+        video.addEventListener('loadedmetadata', () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        });
+
+        scanInterval = setInterval(() => {
+          if (!scanning || video.readyState < 2) return;
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+          // Try jsQR
+          if (typeof jsQR !== 'undefined') {
+            const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+            if (code && code.data) {
+              handleQRResult(code.data);
+              return;
+            }
+          }
+
+          // Try native BarcodeDetector (Chrome/Android)
+          if (window.BarcodeDetector) {
+            new BarcodeDetector({ formats: ['qr_code'] })
+              .detect(canvas)
+              .then(codes => { if (codes.length) handleQRResult(codes[0].rawValue); })
+              .catch(() => {});
+          }
+        }, 200);
+
+      }).catch(err => {
+        console.error('Camera error:', err);
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        let msg = 'Camera error: ' + err.message;
+        if (err.name === 'NotAllowedError') {
+          msg = isIOS
+            ? 'Camera access denied. Go to Settings > Safari > Camera and allow access, then try again.'
+            : 'Camera access denied. Please allow camera access and try again.';
+        } else if (err.name === 'NotFoundError') {
+          msg = 'No camera found on this device.';
+        }
+        setResult(msg, 'error');
+        stopScanner();
+      });
+    }
+
+    function handleQRResult(text) {
+      if (scanDone) return;
+      try {
+        const url = new URL(text);
+        const token = url.searchParams.get('token');
+        if (token) {
+          doScan(token);
+        } else {
+          setResult('Invalid QR code — no token found.', 'error');
+        }
+      } catch {
+        setResult('Invalid QR code format.', 'error');
+      }
+    }
+
+    function stopScanner() {
+      scanning = false;
+      if (scanInterval) { clearInterval(scanInterval); scanInterval = null; }
+      if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+      document.getElementById('qr-reader').style.display = 'none';
+      document.getElementById('start-scan-btn').style.display = 'inline-block';
+      document.getElementById('stop-scan-btn').style.display = 'none';
+    }
+
+    document.getElementById('start-scan-btn').addEventListener('click', startScanner);
+    document.getElementById('stop-scan-btn').addEventListener('click', stopScanner);
+
+    // ── Attendance stats & records ─────────────────────────────────────────────
+    async function loadAttendance() {
+      const res = await fetch('/api/attendance');
+      const data = await res.json();
+      window._attendanceData = data; // store for print
+
+      // Per-course stats table
+      const statsContainer = document.getElementById('course-stats-container');
+      if (!data.courseStats || !data.courseStats.length) {
+        statsContainer.innerHTML = '<p style="color:var(--text-muted);">No enrolled courses yet. Enroll in a course below to see your attendance stats.</p>';
+      } else {
+        statsContainer.innerHTML = `<div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Course</th><th>Lecturer</th><th>Attended</th><th>Total</th><th>%</th><th>Progress</th></tr></thead>
+          <tbody>${data.courseStats.map(c => {
+            const pctClass = c.percentage >= 75 ? 'pct-ok' : c.percentage >= 50 ? 'pct-warn' : 'pct-danger';
+            return `<tr>
+              <td><strong>${c.course_code}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${c.course_name}</span></td>
+              <td>${c.lecturer_name || '—'}</td>
+              <td>${c.attended}</td>
+              <td>${c.total}</td>
+              <td><strong style="color:${c.percentage>=75?'#16a34a':c.percentage>=50?'#d97706':'#dc2626'}">${c.percentage}%</strong></td>
+              <td style="min-width:100px;"><div class="pct-bar"><div class="pct-fill ${pctClass}" style="width:${c.percentage}%"></div></div></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table></div>`;
+      }
+
+      // Attendance records
+      const container = document.getElementById('attendance-container');
+      if (!data.records || !data.records.length) {
+        container.textContent = 'No attendance records yet. Use the scanner above to check in.';
+        return;
+      }
+      container.innerHTML = `
+        <div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Course</th><th>Lecture</th><th>Period</th><th>Scanned At</th><th>Location</th></tr></thead>
+          <tbody>${data.records.map(r => {
+            const rawTitle = r.lecture_title || '—';
+            const cleanTitle = rawTitle.includes(' — ') ? rawTitle.split(' — ').slice(1).join(' — ') : rawTitle;
+            return `<tr>
+              <td data-label="Course"><strong>${r.course_code || '—'}</strong></td>
+              <td data-label="Lecture">${cleanTitle}</td>
+              <td data-label="Period" style="white-space:nowrap">${r.period}</td>
+              <td data-label="Scanned At" style="white-space:nowrap">${new Date(r.scanned_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}<br><span style="font-size:.75rem;color:var(--text-muted)">${new Date(r.scanned_at).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}</span></td>
+              <td data-label="Location" class="${r.location_valid ? 'badge-valid' : 'badge-invalid'}">${r.location_valid ? 'In class' : 'Outside'}</td>
+            </tr>`;
+          }).join('')}
+          </tbody>
+        </table></div>`;
+    }
+
+    // ── My Courses / Enroll ────────────────────────────────────────────────────
+    async function loadAvailableCourses() {
+      try {
+        const [allRes, myRes, pendingRes] = await Promise.all([
+          fetch('/api/courses'),
+          fetch('/api/courses/my'),
+          fetch('/api/courses/my/pending')
+        ]);
+        const all = await allRes.json();
+        const mine = await myRes.json();
+        const pending = await pendingRes.json();
+        const enrolledIds = new Set(mine.map(c => c.id));
+        const pendingIds = new Set(pending.map(c => c.course_id || c.id));
+        // Exclude already approved or pending courses from the dropdown
+        const available = all.filter(c => !enrolledIds.has(c.id) && !pendingIds.has(c.id));
+        const sel = document.getElementById('enroll-select');
+        sel.innerHTML = '<option value="">-- Select a course to request --</option>' +
+          available.map(c => `<option value="${c.course_code}">${c.course_code} — ${c.course_name}${c.lecturer_name ? ' (' + c.lecturer_name + ')' : ''}</option>`).join('');
+      } catch (e) {
+        console.error('Failed to load available courses', e);
+      }
+    }
+
+    document.getElementById('enroll-btn').addEventListener('click', async () => {
+      const errEl = document.getElementById('enroll-error');
+      const okEl  = document.getElementById('enroll-success');
+      errEl.textContent = '';
+      okEl.textContent  = '';
+      const code = document.getElementById('enroll-select').value;
+      if (!code) { errEl.textContent = 'Please select a course.'; return; }
+      const res = await fetch('/api/courses/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course_code: code })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        okEl.textContent = data.message;
+        loadMyCourses();
+        loadPendingCourses();
+        loadAvailableCourses();
+      } else {
+        errEl.textContent = data.error;
+      }
+    });
+
+    async function loadPendingCourses() {
+      try {
+        const res = await fetch('/api/courses/my/pending');
+        const pending = await res.json();
+        const section = document.getElementById('pending-courses-section');
+        const c = document.getElementById('pending-courses-container');
+        if (!pending.length) { section.style.display = 'none'; return; }
+        section.style.display = 'block';
+        c.innerHTML = `<div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Code</th><th>Course Name</th><th>Semester</th><th>Requested</th></tr></thead>
+          <tbody>${pending.map(p => `<tr>
+            <td><strong>${p.course_code}</strong></td>
+            <td>${p.course_name}</td>
+            <td>${p.semester_name || '—'}</td>
+            <td>${new Date(p.enrolled_at).toLocaleDateString()}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>`;
+      } catch (e) {
+        console.error('Failed to load pending courses', e);
+      }
+    }
+
+    async function loadMyCourses() {
+      try {
+        const res = await fetch('/api/courses/my');
+        const courses = await res.json();
+        const c = document.getElementById('my-courses-container');
+        if (!courses.length) {
+          c.innerHTML = '<p style="color:var(--text-muted);">No approved courses yet.</p>';
+          return;
+        }
+        c.innerHTML = `<div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Code</th><th>Course Name</th><th>Lecturer</th><th>Semester</th></tr></thead>
+          <tbody>${courses.map(co => `<tr>
+            <td><strong>${co.course_code}</strong></td>
+            <td>${co.course_name}</td>
+            <td>${co.lecturer_name || '—'}</td>
+            <td>${co.semester_name || '—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>`;
+      } catch (e) {
+        document.getElementById('my-courses-container').textContent = 'Failed to load courses.';
+      }
+    }
+
+    // ── Print utility ──────────────────────────────────────────────────────────
+    function printReport(title, bodyHtml) {
+      const w = window.open('', '_blank');
+      w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+      <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Times New Roman',Times,serif;font-size:13px;color:#000;background:#fff;padding:1.5rem 2rem}
+        .lh{display:flex;align-items:center;gap:1.5rem;margin-bottom:.5rem}
+        .lh-logo{width:88px;height:88px;border:2px solid #1a237e;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;overflow:hidden}
+        .lh-text{flex:1}.lh-text h1{font-size:1.6rem;font-weight:900;color:#1a237e;text-transform:uppercase;letter-spacing:.02em;margin-bottom:.15rem}
+        .lh-text p{font-size:.8rem;color:#333;margin-bottom:.1rem}
+        .lh-right{text-align:right;font-size:.72rem;color:#666;min-width:80px}
+        .report-title{text-align:center;font-size:1rem;font-weight:700;color:#1a237e;text-decoration:underline;text-transform:uppercase;letter-spacing:.08em;margin:.5rem 0 .6rem}
+        .divider-double{border:none;margin:.35rem 0}
+        .divider-double::before{content:'';display:block;border-top:3px solid #c62828;margin-bottom:2px}
+        .divider-double::after{content:'';display:block;border-top:2px solid #1a237e}
+        .info-block{margin:.6rem 0 .8rem}.info-row{display:flex;gap:.5rem;padding:.18rem 0;font-size:.88rem}
+        .info-label{font-weight:700;color:#1a237e;min-width:130px;text-align:right}
+        .section-title{font-size:.88rem;font-weight:700;color:#c62828;text-transform:uppercase;letter-spacing:.05em;margin:1rem 0 .35rem}
+        table{width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:.82rem}
+        thead tr{border-bottom:2px solid #1a237e}
+        th{color:#1a237e;font-weight:700;padding:.4rem .6rem;text-align:left;font-size:.78rem}
+        td{padding:.35rem .6rem;border-bottom:1px solid #ddd;color:#000}
+        tbody tr:last-child td{border-bottom:none}
+        .print-footer{margin-top:1.5rem;font-size:.72rem;color:#666;border-top:1px solid #ccc;padding-top:.5rem;display:flex;justify-content:space-between}
+        @media print{body{padding:.5rem 1rem}.no-print{display:none}@page{margin:1.5cm}}
+      </style>
+      </head><body>
+      <div class="lh">
+        <div class="lh-logo"><img src="${window.location.origin}/bu-logo.png" alt="Bugema University" style="width:100%;height:100%;object-fit:contain;border-radius:50%;"></div>
+        <div class="lh-text">
+          <h1>Bugema University</h1>
+          <p>P. O. Box 6529 Kampala - Uganda, Tel: +256-312-351-400</p>
+          <p>www.bugemauniv.ac.ug</p>
+        </div>
+        <div class="lh-right">Generated:<br>${new Date().toLocaleDateString('en-GB')}<br>${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}</div>
+      </div>
+      <div class="report-title">${title}</div>
+      <hr class="divider-double">
+      ${bodyHtml}
+      <div class="print-footer"><span>BU Attendance Portal &mdash; Confidential</span><span>Printed: ${new Date().toLocaleString('en-GB')}</span></div>
+      <div class="no-print" style="margin-top:1.5rem;display:flex;gap:.5rem;">
+        <button onclick="window.print()" style="background:#1a237e;color:#fff;border:none;padding:.65rem 1.5rem;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:700;">Print / Save as PDF</button>
+        <button onclick="window.close()" style="background:#64748b;color:#fff;border:none;padding:.65rem 1.5rem;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:600;">Close</button>
+      </div>
+      </body></html>`);
+      w.document.close();
+    }
+
+    // ── Rate Lecturer ──────────────────────────────────────────────────────────
+    async function loadRateLecturer() {
+      try {
+        const [coursesRes, myRatingsRes] = await Promise.all([
+          fetch('/api/courses/my'),
+          fetch('/api/assessment/course-ratings/submitted')
+        ]);
+        const courses = await coursesRes.json();
+        const myRatings = myRatingsRes.ok ? await myRatingsRes.json() : [];
+
+        const ratingMap = {};
+        myRatings.forEach(r => { ratingMap[r.course_id] = r.score; });
+
+        const section = document.getElementById('rate-lecturer-section');
+        const container = document.getElementById('rate-lecturer-container');
+        if (!courses.length) { section.style.display = 'none'; return; }
+        section.style.display = 'block';
+
+        container.innerHTML = courses.map(c => {
+          const existing = ratingMap[c.id];
+          return `
+          <div class="rating-card" id="rcard-${c.id}" style="border:1px solid var(--border-color);border-radius:var(--border-radius);padding:1rem 1.25rem;margin-bottom:.85rem;background:#fff;box-shadow:var(--box-shadow);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;">
+              <div>
+                <div style="font-weight:700;font-size:.95rem;">${c.course_code} — ${c.course_name}</div>
+                <div style="font-size:.82rem;color:var(--text-muted);margin-top:.15rem;">Lecturer: ${c.lecturer_name || '—'}</div>
+              </div>
+              <span id="rbadge-${c.id}" style="font-size:.75rem;font-weight:700;padding:.2rem .65rem;border-radius:99px;${existing ? 'background:#dbeafe;color:#1d4ed8;' : 'background:#f1f5f9;color:#64748b;'}">${existing ? `Rated ${existing}/10` : 'Not rated'}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.6rem;">
+              <div class="star-rating" id="stars-${c.id}">
+                ${[10,9,8,7,6,5,4,3,2,1].map(n=>`
+                  <input type="radio" name="rate-${c.id}" id="r${c.id}-${n}" value="${n}" ${existing === n ? 'checked' : ''}>
+                  <label for="r${c.id}-${n}" title="${n}/10">&#9733;</label>`).join('')}
+              </div>
+              <span id="star-val-${c.id}" style="font-size:.85rem;font-weight:600;color:var(--text-color);min-width:36px;">${existing ? existing + '/10' : '—'}</span>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+              <button onclick="submitLecturerRating(${c.id})" style="padding:.4rem 1rem;font-size:.85rem;font-weight:600;background:var(--primary-color);color:#fff;border:none;border-radius:var(--border-radius);cursor:pointer;">${existing ? 'Update Rating' : 'Submit Rating'}</button>
+              ${existing ? `<button onclick="clearLecturerRating(${c.id})" id="rbtn-clear-${c.id}" style="padding:.4rem .85rem;font-size:.82rem;font-weight:600;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:var(--border-radius);cursor:pointer;">Remove</button>` : `<span id="rbtn-clear-${c.id}"></span>`}
+            </div>
+            <p id="rating-msg-${c.id}" style="font-size:.82rem;margin-top:.5rem;min-height:1.1em;font-weight:500;"></p>
+          </div>`;
+        }).join('');
+
+        courses.forEach(c => {
+          document.querySelectorAll(`input[name="rate-${c.id}"]`).forEach(inp => {
+            inp.addEventListener('change', () => {
+              document.getElementById(`star-val-${c.id}`).textContent = inp.value + '/10';
+            });
+          });
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    function showRatingMsg(courseId, text, isError) {
+      const msg = document.getElementById(`rating-msg-${courseId}`);
+      msg.textContent = text;
+      msg.style.color = isError ? 'var(--error-color)' : 'var(--success-color)';
+      setTimeout(() => { msg.textContent = ''; }, 3000);
+    }
+
+    async function submitLecturerRating(courseId) {
+      const selected = document.querySelector(`input[name="rate-${courseId}"]:checked`);
+      if (!selected) { showRatingMsg(courseId, 'Please select a star rating first.', true); return; }
+
+      const submitBtn = document.querySelector(`#rcard-${courseId} button`);
+      const isUpdate = submitBtn && submitBtn.textContent.trim().startsWith('Update');
+
+      const res = await fetch('/api/assessment/course-ratings/student-rates-lecturer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course_id: courseId, score: parseInt(selected.value) })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showRatingMsg(courseId, isUpdate ? '✓ Rating updated' : '✓ Rating submitted', false);
+        // Update badge
+        const badge = document.getElementById(`rbadge-${courseId}`);
+        if (badge) { badge.textContent = `Rated ${selected.value}/10`; badge.style.cssText = 'font-size:.75rem;font-weight:700;padding:.2rem .65rem;border-radius:99px;background:#dbeafe;color:#1d4ed8;'; }
+        if (submitBtn) submitBtn.textContent = 'Update Rating';
+        // Show remove button if not there
+        const clearSpan = document.getElementById(`rbtn-clear-${courseId}`);
+        if (clearSpan && clearSpan.tagName === 'SPAN') {
+          clearSpan.outerHTML = `<button onclick="clearLecturerRating(${courseId})" id="rbtn-clear-${courseId}" style="padding:.4rem .85rem;font-size:.82rem;font-weight:600;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:var(--border-radius);cursor:pointer;">Remove</button>`;
+        }
+      } else {
+        showRatingMsg(courseId, data.error, true);
+      }
+    }
+
+    async function clearLecturerRating(courseId) {
+      if (!confirm('Remove your rating for this course?')) return;
+      const res = await fetch(`/api/assessment/course-ratings/student-clear/${courseId}`, { method: 'DELETE' });
+      if (res.ok) {
+        showRatingMsg(courseId, 'Rating removed.', false);
+        document.querySelectorAll(`input[name="rate-${courseId}"]`).forEach(i => i.checked = false);
+        document.getElementById(`star-val-${courseId}`).textContent = '—';
+        const badge = document.getElementById(`rbadge-${courseId}`);
+        if (badge) { badge.textContent = 'Not rated'; badge.style.cssText = 'font-size:.75rem;font-weight:700;padding:.2rem .65rem;border-radius:99px;background:#f1f5f9;color:#64748b;'; }
+        const submitBtn = document.querySelector(`#rcard-${courseId} button`);
+        if (submitBtn) submitBtn.textContent = 'Submit Rating';
+        const clearBtn = document.getElementById(`rbtn-clear-${courseId}`);
+        if (clearBtn && clearBtn.tagName === 'BUTTON') {
+          clearBtn.outerHTML = `<span id="rbtn-clear-${courseId}"></span>`;
+        }
+      } else {
+        showRatingMsg(courseId, 'Failed to remove rating.', true);
+      }
+    }
+    (async () => {
+      const meRes = await fetch('/api/auth/me');
+      if (!meRes.ok) { window.location.href = '/login.html'; return; }
+      const me = await meRes.json();
+      document.getElementById('dashboard-user').textContent =
+        `${me.username ? me.username + ' — ' : ''}Reg: ${me.reg_number}`;
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/login.html';
+      });
+      loadAttendance();
+      loadMyCourses();
+      loadPendingCourses();
+      loadAvailableCourses();
+      loadRateLecturer();
+      checkBiometricStatus();
+
+      document.getElementById('print-attendance-btn').addEventListener('click', () => {
+        const data = window._attendanceData;
+        if (!data) return;
+        const courseRows = (data.courseStats || []).map(c => {
+          const pctColor = c.percentage >= 75 ? '#16a34a' : c.percentage >= 50 ? '#d97706' : '#dc2626';
+          return `<tr><td><strong>${c.course_code}</strong></td><td>${c.course_name}</td><td>${c.lecturer_name||'—'}</td><td style="text-align:center">${c.attended}</td><td style="text-align:center">${c.total}</td><td style="text-align:center;font-weight:700;color:${pctColor}">${c.percentage}%</td></tr>`;
+        }).join('');
+        const recRows = (data.records || []).map(r =>
+          `<tr><td>${r.course_code||'—'}</td><td>${r.lecture_title}</td><td>${r.period}</td><td>${new Date(r.scanned_at).toLocaleString('en-GB')}</td><td style="color:${r.location_valid?'#16a34a':'#dc2626'};font-weight:600">${r.location_valid?'In class':'Outside'}</td></tr>`
+        ).join('');
+        printReport(`Attendance Report — ${me.username || me.reg_number}`,
+          `<div class="info-block">
+            <div class="info-row"><span class="info-label">Student Name</span><span>${me.username||'—'}</span></div>
+            <div class="info-row"><span class="info-label">Reg Number</span><span>${me.reg_number}</span></div>
+          </div>
+          <hr class="divider-double">
+          <div class="section-title">Attendance by Course</div>
+          <table><thead><tr><th>Code</th><th>Course Name</th><th>Lecturer</th><th>Attended</th><th>Total</th><th>Percentage</th></tr></thead>
+          <tbody>${courseRows||'<tr><td colspan="6" style="color:#999;text-align:center">No enrolled courses</td></tr>'}</tbody></table>
+          <div class="section-title">Attendance Records</div>
+          <table><thead><tr><th>Course</th><th>Lecture</th><th>Period</th><th>Scanned At</th><th>Location</th></tr></thead>
+          <tbody>${recRows||'<tr><td colspan="5" style="color:#999;text-align:center">No records yet</td></tr>'}</tbody></table>`
+        );
+      });
+    })();
+  </script>
+</body>
+</html>

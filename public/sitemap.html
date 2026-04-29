@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BU Attendance Portal – Site Map</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f0f2f5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #000;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    margin-bottom: .4rem;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ── Diagram wrapper ── */
+  .diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* ── Node boxes ── */
+  .box {
+    border: 2px solid #000;
+    border-radius: 4px;
+    background: #fff;
+    text-align: center;
+    padding: .55rem 1.1rem;
+    font-size: .95rem;
+    font-weight: 700;
+    white-space: nowrap;
+    min-width: 140px;
+  }
+  .box.root {
+    font-size: 1.15rem;
+    font-weight: 900;
+    padding: .7rem 1.8rem;
+    min-width: 200px;
+    border-width: 3px;
+  }
+  .box.level2 {
+    font-size: .82rem;
+    font-weight: 600;
+    min-width: 120px;
+    padding: .45rem .9rem;
+  }
+  .box.level3 {
+    font-size: .82rem;
+    font-weight: 700;
+    min-width: 130px;
+    padding: .45rem .9rem;
+  }
+  .box.leaf {
+    font-size: .75rem;
+    font-weight: 400;
+    min-width: 120px;
+    padding: .4rem .75rem;
+    text-align: left;
+    line-height: 1.6;
+    border-width: 1.5px;
+    border-style: dashed;
+  }
+
+  /* ── Vertical connector ── */
+  .vline {
+    width: 2px;
+    background: #000;
+    margin: 0 auto;
+  }
+
+  /* ── Horizontal row with top bar ── */
+  .hrow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+  }
+  .hrow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2px;
+    background: #000;
+    width: calc(100% - 80px);
+  }
+
+  /* ── Column (branch) ── */
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+  }
+  .col > .vline { height: 20px; }
+
+  /* ── Sub-items list inside a leaf ── */
+  .sub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  /* ── Features section ── */
+  .features-wrap {
+    max-width: 1100px;
+    margin: 3rem auto 0;
+    border: 2px solid #000;
+    border-radius: 6px;
+    background: #fff;
+    padding: 1.5rem 2rem;
+  }
+  .features-wrap h2 {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-bottom: 2px solid #000;
+    padding-bottom: .6rem;
+    margin-bottom: 1.25rem;
+  }
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .feat-col h3 {
+    font-size: .9rem;
+    font-weight: 800;
+    margin-bottom: .5rem;
+    border-bottom: 1px solid #999;
+    padding-bottom: .25rem;
+  }
+  .feat-col ul {
+    list-style: disc;
+    padding-left: 1.1rem;
+  }
+  .feat-col ul li {
+    font-size: .82rem;
+    line-height: 1.7;
+    color: #111;
+  }
+  .feat-footer {
+    margin-top: 1rem;
+    font-size: .78rem;
+    color: #555;
+    border-top: 1px solid #ccc;
+    padding-top: .6rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>BU Attendance Portal – Site Map</h1>
+<p class="subtitle">System Architecture &amp; Page Hierarchy</p>
+
+<div class="diagram">
+
+  <!-- ROOT -->
+  <div class="box root">Admin (System Controller)</div>
+  <div class="vline" style="height:22px"></div>
+
+  <!-- Level 2 admin functions -->
+  <div class="hrow" style="width:780px">
+    <div class="col"><div class="box level2">Manage Users</div></div>
+    <div class="col"><div class="box level2">Manage Courses</div></div>
+    <div class="col"><div class="box level2">Enrollment Approvals</div></div>
+    <div class="col"><div class="box level2">Messages</div></div>
+    <div class="col"><div class="box level2">System Settings</div></div>
+  </div>
+  <div class="vline" style="height:22px"></div>
+
+  <!-- Homepage -->
+  <div class="box root" style="font-size:1rem;min-width:180px">Homepage (index.html)</div>
+  <div class="vline" style="height:22px"></div>
+
+  <!-- 6 portals -->
+  <div class="hrow" style="width:1300px">
+
+    <!-- Public Pages -->
+    <div class="col">
+      <div class="box level3">Public Pages</div>
+      <div class="vline" style="height:16px"></div>
+      <div class="sub">
+        <div class="box leaf">Home (index.html)</div>
+        <div class="box leaf">About (about.html)</div>
+        <div class="box leaf">Contact (contact.html)<br>· Send issue / Support<br>· View reply history</div>
+      </div>
+    </div>
+
+    <!-- Authentication -->
+    <div class="col">
+      <div class="box level3">Authentication</div>
+      <div class="vline" style="height:16px"></div>
+      <div class="sub">
+        <div class="box leaf">Login (login.html)</div>
+        <div class="box leaf">Register (register.html)</div>
+        <div class="box leaf">· Account Registration<br>· First User = Admin<br>· Role Assignment</div>
+      </div>
+    </div>
+
+    <!-- Student Portal -->
+    <div class="col">
+      <div class="box level3">Student Portal</div>
+      <div class="vline" style="height:16px"></div>
+      <div class="sub">
+        <div class="box level3" style="font-size:.78rem">Dashboard (dashboard.html)</div>
+        <div class="box leaf">· QR Code Scanner<br>· Fingerprint Setup<br>· Attendance by Course<br>· Request Enrollment<br>· Pending Approvals<br>· Enrolled Courses<br>· Print Attendance Report</div>
+        <div class="box level3" style="font-size:.78rem">Scan (scan.html)</div>
+        <div class="box leaf">· Direct QR Scanning<br>· GPS Location Check<br>· Biometric Verify</div>
+      </div>
+    </div>
+
+    <!-- Lecturer Portal -->
+    <div class="col">
+      <div class="box level3">Lecturer Portal</div>
+      <div class="vline" style="height:16px"></div>
+      <div class="sub">
+        <div class="box level3" style="font-size:.78rem">Lectures (lecturer.html)</div>
+        <div class="box leaf">· Create Lecture (by Course)<br>· Generate QR Code<br>· Set Location (GPS)<br>· Define Radius<br>· Delete Lecture</div>
+        <div class="box level3" style="font-size:.78rem">Student Attendance</div>
+        <div class="box leaf">· Per-Course Breakdown<br>· Attendance % per Student<br>· Print / Export Report</div>
+        <div class="box level3" style="font-size:.78rem">All Records</div>
+        <div class="box leaf">· Full Attendance Log<br>· Print / Export</div>
+      </div>
+    </div>
+
+    <!-- QA Office -->
+    <div class="col">
+      <div class="box level3">QA Office</div>
+      <div class="vline" style="height:16px"></div>
+      <div class="sub">
+        <div class="box level3" style="font-size:.78rem">Dashboard (qa.html)</div>
+        <div class="box leaf">· Analytics Charts<br>· KPI Cards<br>· At-Risk Students<br>· Attendance Trend<br>· Hourly Distribution</div>
+        <div class="box level3" style="font-size:.78rem">Course Reports</div>
+        <div class="box leaf">· Student Attendance<br>· Lecture History<br>· Print / Export</div>
+        <div class="box level3" style="font-size:.78rem">Teaching Summary</div>
+        <div class="box leaf">· Per-Lecturer Cards<br>· Course Engagement<br>· Performance Rating<br>· Print Summary</div>
+      </div>
+    </div>
+
+    <!-- Admin Portal -->
+    <div class="col">
+      <div class="box level3">Admin Portal</div>
+      <div class="vline" style="height:16px"></div>
+      <div class="sub">
+        <div class="box level3" style="font-size:.78rem">Admin (admin.html)</div>
+        <div class="box leaf">· Create Accounts<br>· Manage All Users<br>· Edit / Delete Users</div>
+        <div class="box level3" style="font-size:.78rem">Courses &amp; Semesters</div>
+        <div class="box leaf">· Create Course<br>· Assign Lecturer<br>· Manage Semesters</div>
+        <div class="box level3" style="font-size:.78rem">Enrollment Requests</div>
+        <div class="box leaf">· Approve / Reject<br>· Badge Counter</div>
+        <div class="box level3" style="font-size:.78rem">Messages</div>
+        <div class="box leaf">· View Support Messages<br>· Reply via Email Client<br>· Mark Read / Delete</div>
+        <div class="box level3" style="font-size:.78rem">Assessment Sheet</div>
+        <div class="box leaf">· Student Scores<br>· Grade Assignment<br>· Print (BU Letterhead)</div>
+        <div class="box level3" style="font-size:.78rem">System Settings</div>
+        <div class="box leaf">· Attendance Threshold<br>· QR Expiry Settings</div>
+      </div>
+    </div>
+
+  </div><!-- end hrow -->
+
+</div><!-- end diagram -->
+
+<!-- Features Table -->
+<div class="features-wrap">
+  <h2>Current System Features</h2>
+  <div class="feat-grid">
+    <div class="feat-col">
+      <h3>Authentication</h3>
+      <ul>
+        <li>User login with credentials</li>
+        <li>Role-based access control</li>
+        <li>WebAuthn fingerprint support</li>
+        <li>Account self-registration</li>
+        <li>First user becomes Admin</li>
+      </ul>
+      <h3 style="margin-top:1rem">Reporting &amp; Analytics</h3>
+      <ul>
+        <li>Per-course attendance stats</li>
+        <li>Lecturer performance reports</li>
+        <li>At-risk student detection (&lt;75%)</li>
+        <li>Print preview with BU letterhead</li>
+        <li>QA monitoring dashboard</li>
+      </ul>
+      <h3 style="margin-top:1rem">Contact &amp; Support</h3>
+      <ul>
+        <li>Students/Lecturers/QA send messages</li>
+        <li>Admin views all messages</li>
+        <li>Admin replies via email client</li>
+        <li>Message status tracking</li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <h3>Attendance Tracking</h3>
+      <ul>
+        <li>QR code generation &amp; scanning</li>
+        <li>Real-time attendance recording</li>
+        <li>GPS location verification</li>
+        <li>Biometric fingerprint verification</li>
+        <li>Course-based attendance filter</li>
+        <li>QR expiry settings</li>
+      </ul>
+      <h3 style="margin-top:1rem">User Roles</h3>
+      <ul>
+        <li>Admin – full system control</li>
+        <li>Lecturer – manage courses &amp; lectures</li>
+        <li>Student – enroll, scan &amp; view records</li>
+        <li>QA Office – monitor &amp; report</li>
+      </ul>
+    </div>
+    <div class="feat-col">
+      <h3>Course Management</h3>
+      <ul>
+        <li>Admin creates &amp; assigns courses</li>
+        <li>Student enrollment requests</li>
+        <li>Admin approval workflow</li>
+        <li>Semester management</li>
+        <li>Lecturer-course assignment</li>
+        <li>Course-specific lecture creation</li>
+      </ul>
+      <h3 style="margin-top:1rem">Technology Stack</h3>
+      <ul>
+        <li>Node.js + Express backend</li>
+        <li>SQLite (sql.js) database</li>
+        <li>HTML5 QR Scanner</li>
+        <li>Leaflet Maps integration</li>
+        <li>WebAuthn biometric API</li>
+        <li>Chart.js analytics</li>
+        <li>Nodemailer (contact replies)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="feat-footer">BU Attendance Management System &mdash; Bugema University &mdash; 2025</div>
+</div>
+
+</body>
+</html>
