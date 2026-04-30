@@ -13,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.set('trust proxy', 1); // trust Render's reverse proxy so secure cookies work
 app.use(session({
   secret: process.env.SESSION_SECRET || 'attendance-system-secret',
   resave: false,
