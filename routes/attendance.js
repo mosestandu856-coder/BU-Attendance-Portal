@@ -28,6 +28,7 @@ router.post('/lectures', requireAuth, requireAdmin, async (req, res) => {
   const { title, period, class_lat, class_lng, radius_meters, expires_at, course_id } = req.body;
   if (!period) return res.status(400).json({ error: 'period is required' });
   if (!course_id) return res.status(400).json({ error: 'course_id is required' });
+  if (!class_lat || !class_lng) return res.status(400).json({ error: 'Classroom location is required. Please use the "Detect My Location" button.' });
 
   try {
     if (req.session.role === 'lecturer') {
@@ -35,10 +36,11 @@ router.post('/lectures', requireAuth, requireAdmin, async (req, res) => {
       if (!course) return res.status(403).json({ error: 'You are not assigned to this course' });
     }
 
-    // Prevent duplicate lectures for same course + period
+    // Prevent duplicate lectures for same course + period (normalised: trim, collapse whitespace, lowercase)
+    const normalisedPeriod = period.trim().replace(/\s+/g, ' ').toLowerCase();
     const duplicate = await prepare(
-      'SELECT id FROM lectures WHERE course_id = ? AND period = ? AND created_by = ?'
-    ).get(course_id, period, req.session.userId);
+      'SELECT id FROM lectures WHERE course_id = ? AND LOWER(TRIM(period)) = ? AND created_by = ?'
+    ).get(course_id, normalisedPeriod, req.session.userId);
     if (duplicate) {
       return res.status(409).json({ error: 'A lecture for this course and period already exists. Delete the existing one first or use a different period.' });
     }
@@ -244,6 +246,13 @@ router.post('/scan', requireAuth, async (req, res) => {
 
     const already = await prepare('SELECT id FROM attendance WHERE user_id = ? AND lecture_id = ?').get(req.session.userId, lecture.id);
     if (already) return res.status(409).json({ error: 'You have already scanned for this lecture' });
+
+    // ── Reject scan if lecture has a location but student GPS is unavailable ──
+    if (lecture.class_lat && lecture.class_lng && (student_lat == null || student_lng == null)) {
+      return res.status(403).json({
+        error: 'GPS location required — please enable location access to mark attendance for this class.'
+      });
+    }
 
     let location_valid = 1;
     if (lecture.class_lat && lecture.class_lng && student_lat && student_lng) {

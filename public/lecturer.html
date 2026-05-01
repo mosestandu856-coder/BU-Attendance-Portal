@@ -91,7 +91,7 @@ select,input[type=text],input[type=number],input[type=datetime-local]{width:100%
 <input type="datetime-local" id="lec-expires">
 </div>
 <div class="form-group">
-<label>Classroom Location</label>
+<label>Classroom Location <span style="color:#dc2626;font-weight:700;" title="Required">*</span> <span style="font-size:.8rem;color:var(--text-muted);font-weight:400;">(required for GPS enforcement)</span></label>
 <div id="location-status" style="font-size:.85rem;color:var(--text-muted);margin-bottom:.5rem;">Click the button to detect your location</div>
 <button type="button" id="get-location-btn" style="margin-bottom:.75rem;">Detect My Location</button>
 <div id="map-container" style="display:none;border-radius:var(--border-radius);overflow:hidden;border:1px solid var(--border-color);margin-bottom:.5rem;">
@@ -110,7 +110,7 @@ select,input[type=text],input[type=number],input[type=datetime-local]{width:100%
 <input type="number" id="lec-radius" value="500" min="10" max="5000">
 </div>
 <button type="submit">Generate QR Code</button>
-<p class="error-msg" id="lec-error"></p>
+<div id="lec-error" style="display:none;padding:.75rem 1rem;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:var(--border-radius);margin-top:.75rem;font-weight:600;"></div>
 </form>
 </section>
 <section class="card">
@@ -191,22 +191,25 @@ async function init() {
 
 document.getElementById('lecture-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  document.getElementById('lec-error').textContent = '';
+  const errEl = document.getElementById('lec-error');
+  errEl.style.display = 'none';
+  errEl.textContent = '';
   const course_id = document.getElementById('lec-course').value;
   const period = document.getElementById('lec-period').value.trim();
   const expires_at = document.getElementById('lec-expires').value || null;
   const class_lat = parseFloat(document.getElementById('lec-lat').value) || null;
   const class_lng = parseFloat(document.getElementById('lec-lng').value) || null;
   const radius_meters = parseInt(document.getElementById('lec-radius').value) || 500;
-  if (!course_id) { document.getElementById('lec-error').textContent = 'Please select a course.'; return; }
-  if (!period) { document.getElementById('lec-error').textContent = 'Period is required.'; return; }
+  if (!course_id) { errEl.textContent = 'Please select a course.'; errEl.style.display = 'block'; return; }
+  if (!period) { errEl.textContent = 'Period is required.'; errEl.style.display = 'block'; return; }
+  if (!class_lat || !class_lng) { errEl.textContent = 'Classroom location is required. Please click "Detect My Location" first.'; errEl.style.display = 'block'; return; }
   // Auto-generate title from selected course option text
   const courseOption = document.getElementById('lec-course').selectedOptions[0];
   const title = courseOption ? courseOption.textContent.trim() : 'Lecture';
   const res = await fetch('/api/attendance/lectures', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, period, class_lat, class_lng, radius_meters, expires_at, course_id }) });
   const data = await res.json();
   if (res.ok) { showQR(data.qr, title, period); loadLectures(); e.target.reset(); }
-  else document.getElementById('lec-error').textContent = data.error;
+  else { errEl.textContent = data.error; errEl.style.display = 'block'; }
 });
 
 function showQR(qrDataUrl, title, period) {

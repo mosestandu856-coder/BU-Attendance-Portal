@@ -118,13 +118,13 @@
     <!-- My Courses / Enroll -->
     <section class="card">
       <h2>My Courses</h2>
-      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Select a course below to request enrollment. Your request will be reviewed by the admin.</p>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-        <select id="enroll-select" style="flex:1;min-width:200px;padding:.6rem .85rem;border:1px solid var(--border-color);border-radius:var(--border-radius);font-size:1rem;background:var(--surface-color);color:var(--text-color);">
-          <option value="">-- Select a course to request --</option>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Select courses below to request enrollment (hold <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> to select multiple, max 8). Your request will be reviewed by the admin.</p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;align-items:flex-start;">
+        <select id="enroll-select" multiple size="6" style="flex:1;min-width:200px;padding:.6rem .85rem;border:1px solid var(--border-color);border-radius:var(--border-radius);font-size:1rem;background:var(--surface-color);color:var(--text-color);">
         </select>
-        <button id="enroll-btn">Request Enrollment</button>
+        <button id="enroll-btn" style="align-self:flex-start;">Request Enrollment</button>
       </div>
+      <p style="color:var(--text-muted);font-size:.8rem;margin-bottom:.75rem;">Select 1–8 courses. Hold <kbd>Ctrl</kbd> (Windows) or <kbd>Cmd</kbd> (Mac) to select multiple.</p>
       <p class="error-msg" id="enroll-error"></p>
       <p class="success-msg" id="enroll-success"></p>
 
@@ -578,8 +578,10 @@
         // Exclude already approved or pending courses from the dropdown
         const available = all.filter(c => !enrolledIds.has(c.id) && !pendingIds.has(c.id));
         const sel = document.getElementById('enroll-select');
-        sel.innerHTML = '<option value="">-- Select a course to request --</option>' +
-          available.map(c => `<option value="${c.course_code}">${c.course_code} — ${c.course_name}${c.lecturer_name ? ' (' + c.lecturer_name + ')' : ''}</option>`).join('');
+        sel.innerHTML = available.map(c => `<option value="${c.course_code}">${c.course_code} — ${c.course_name}${c.lecturer_name ? ' (' + c.lecturer_name + ')' : ''}</option>`).join('');
+        if (!available.length) {
+          sel.innerHTML = '<option value="" disabled>No courses available to enroll</option>';
+        }
       } catch (e) {
         console.error('Failed to load available courses', e);
       }
@@ -590,21 +592,36 @@
       const okEl  = document.getElementById('enroll-success');
       errEl.textContent = '';
       okEl.textContent  = '';
-      const code = document.getElementById('enroll-select').value;
-      if (!code) { errEl.textContent = 'Please select a course.'; return; }
-      const res = await fetch('/api/courses/enroll', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ course_code: code })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        okEl.textContent = data.message;
+      const sel = document.getElementById('enroll-select');
+      const selected = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+      if (!selected.length) { errEl.textContent = 'Please select at least one course.'; return; }
+      if (selected.length > 8) { errEl.textContent = 'You can select a maximum of 8 courses.'; return; }
+
+      // Submit enrollment requests for all selected courses
+      let successCount = 0;
+      const errors = [];
+      for (const code of selected) {
+        const res = await fetch('/api/courses/enroll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ course_code: code })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          successCount++;
+        } else {
+          errors.push(`${code}: ${data.error}`);
+        }
+      }
+
+      if (successCount > 0) {
+        okEl.textContent = `${successCount} enrollment request${successCount > 1 ? 's' : ''} sent. Awaiting admin approval.`;
         loadMyCourses();
         loadPendingCourses();
         loadAvailableCourses();
-      } else {
-        errEl.textContent = data.error;
+      }
+      if (errors.length) {
+        errEl.textContent = errors.join(' | ');
       }
     });
 

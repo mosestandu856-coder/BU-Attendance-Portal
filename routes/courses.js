@@ -137,6 +137,17 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
 router.post('/enroll', requireAuth, async (req, res) => {
   const { course_code } = req.body;
   if (!course_code) return res.status(400).json({ error: 'Course code required' });
+
+  // Guard: students may not hold more than 8 approved+pending enrollments
+  try {
+    const existing = await prepare(
+      "SELECT COUNT(*) as cnt FROM course_enrollments WHERE student_id = ? AND status IN ('approved','pending')"
+    ).get(req.session.userId);
+    if (existing && existing.cnt >= 8) {
+      return res.status(400).json({ error: 'You have reached the maximum of 8 courses. Remove a course before enrolling in a new one.' });
+    }
+  } catch (e) { /* non-fatal — proceed */ }
+
   try {
     const course = await prepare('SELECT id, course_name FROM courses WHERE course_code = ?').get(course_code.trim().toUpperCase());
     if (!course) return res.status(404).json({ error: 'Course does not exist. Please check the course code.' });
