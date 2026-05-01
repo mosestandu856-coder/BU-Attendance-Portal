@@ -143,8 +143,8 @@ router.post('/enroll', requireAuth, async (req, res) => {
     const existing = await prepare(
       "SELECT COUNT(*) as cnt FROM course_enrollments WHERE student_id = ? AND status IN ('approved','pending')"
     ).get(req.session.userId);
-    if (existing && existing.cnt >= 8) {
-      return res.status(400).json({ error: 'You have reached the maximum of 8 courses. Remove a course before enrolling in a new one.' });
+    if (existing && existing.cnt >= 9) {
+      return res.status(400).json({ error: 'You have reached the maximum of 9 courses. Remove a course before enrolling in a new one.' });
     }
   } catch (e) { /* non-fatal — proceed */ }
 

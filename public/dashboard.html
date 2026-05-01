@@ -118,13 +118,67 @@
     <!-- My Courses / Enroll -->
     <section class="card">
       <h2>My Courses</h2>
-      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Select courses below to request enrollment (hold <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> to select multiple, max 8). Your request will be reviewed by the admin.</p>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;align-items:flex-start;">
-        <select id="enroll-select" multiple size="6" style="flex:1;min-width:200px;padding:.6rem .85rem;border:1px solid var(--border-color);border-radius:var(--border-radius);font-size:1rem;background:var(--surface-color);color:var(--text-color);">
-        </select>
-        <button id="enroll-btn" style="align-self:flex-start;">Request Enrollment</button>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem;">Select up to 9 courses to request enrollment. Your request will be reviewed by the admin.</p>
+
+      <!-- Custom checkbox multi-select dropdown -->
+      <style>
+        .enroll-dropdown-wrap { position: relative; margin-bottom: .75rem; }
+        .enroll-trigger {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: .65rem 1rem; border: 1px solid var(--border-color);
+          border-radius: var(--border-radius); background: var(--surface-color);
+          color: var(--text-color); cursor: pointer; font-size: .95rem;
+          user-select: none; -webkit-user-select: none; min-height: 44px;
+        }
+        .enroll-trigger:hover { border-color: var(--primary-color); }
+        .enroll-trigger .arrow { transition: transform .2s; font-size: .75rem; color: var(--text-muted); flex-shrink: 0; margin-left: .5rem; }
+        .enroll-trigger.open .arrow { transform: rotate(180deg); }
+        .enroll-trigger .trigger-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .enroll-panel {
+          display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+          background: var(--surface-color); border: 1px solid var(--border-color);
+          border-radius: var(--border-radius); box-shadow: 0 8px 24px rgba(0,0,0,.12);
+          z-index: 100; max-height: 280px; overflow-y: auto;
+        }
+        .enroll-panel.open { display: block; }
+        .enroll-option {
+          display: flex; align-items: center; gap: .75rem;
+          padding: .65rem 1rem; cursor: pointer; transition: background .15s;
+          border-bottom: 1px solid #f1f5f9; font-size: .92rem;
+        }
+        .enroll-option:last-child { border-bottom: none; }
+        .enroll-option:hover { background: #f0f4ff; }
+        .enroll-option input[type=checkbox] {
+          width: 18px; height: 18px; accent-color: var(--primary-color);
+          cursor: pointer; flex-shrink: 0; margin: 0;
+        }
+        .enroll-option label { cursor: pointer; flex: 1; line-height: 1.3; }
+        .enroll-option.checked { background: #eff6ff; }
+        .enroll-option.disabled { opacity: .45; pointer-events: none; }
+        .enroll-count-badge {
+          display: inline-flex; align-items: center; justify-content: center;
+          background: var(--primary-color); color: #fff; border-radius: 99px;
+          font-size: .72rem; font-weight: 700; min-width: 20px; height: 20px;
+          padding: 0 5px; margin-left: .4rem; flex-shrink: 0;
+        }
+        .enroll-actions { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: .5rem; }
+      </style>
+
+      <div class="enroll-dropdown-wrap" id="enroll-dropdown-wrap">
+        <div class="enroll-trigger" id="enroll-trigger" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+          <span class="trigger-label" id="enroll-trigger-label">-- Select courses to request --</span>
+          <span class="enroll-count-badge" id="enroll-count-badge" style="display:none;">0</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="enroll-panel" id="enroll-panel" role="listbox" aria-multiselectable="true">
+          <div id="enroll-options-list"></div>
+        </div>
       </div>
-      <p style="color:var(--text-muted);font-size:.8rem;margin-bottom:.75rem;">Select 1–8 courses. Hold <kbd>Ctrl</kbd> (Windows) or <kbd>Cmd</kbd> (Mac) to select multiple.</p>
+
+      <div class="enroll-actions">
+        <button id="enroll-btn">Request Enrollment</button>
+        <button id="enroll-clear-btn" type="button" style="background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:.5rem .9rem;font-size:.85rem;border-radius:var(--border-radius);cursor:pointer;">Clear Selection</button>
+      </div>
       <p class="error-msg" id="enroll-error"></p>
       <p class="success-msg" id="enroll-success"></p>
 
@@ -562,7 +616,82 @@
         </table></div>`;
     }
 
-    // ── My Courses / Enroll ────────────────────────────────────────────────────
+    // ── My Courses / Enroll (custom checkbox dropdown) ────────────────────────
+    const MAX_COURSES = 9;
+    let _availableCourses = [];
+    let _selectedCodes = new Set();
+
+    function updateTriggerLabel() {
+      const label = document.getElementById('enroll-trigger-label');
+      const badge = document.getElementById('enroll-count-badge');
+      const count = _selectedCodes.size;
+      if (count === 0) {
+        label.textContent = '-- Select courses to request --';
+        badge.style.display = 'none';
+      } else {
+        const names = _availableCourses.filter(c => _selectedCodes.has(c.course_code)).map(c => c.course_code);
+        label.textContent = names.join(', ');
+        badge.textContent = count;
+        badge.style.display = 'inline-flex';
+      }
+    }
+
+    function renderOptions() {
+      const list = document.getElementById('enroll-options-list');
+      if (!_availableCourses.length) {
+        list.innerHTML = '<div style="padding:.85rem 1rem;color:var(--text-muted);font-size:.9rem;">No courses available to enroll</div>';
+        return;
+      }
+      list.innerHTML = _availableCourses.map(c => {
+        const checked = _selectedCodes.has(c.course_code);
+        const disabled = !checked && _selectedCodes.size >= MAX_COURSES;
+        return `<div class="enroll-option${checked ? ' checked' : ''}${disabled ? ' disabled' : ''}" data-code="${c.course_code}">
+          <input type="checkbox" id="chk-${c.course_code}" value="${c.course_code}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+          <label for="chk-${c.course_code}">${c.course_code} — ${c.course_name}${c.lecturer_name ? ' (' + c.lecturer_name + ')' : ''}</label>
+        </div>`;
+      }).join('');
+      list.querySelectorAll('input[type=checkbox]').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          const code = e.target.value;
+          if (e.target.checked) {
+            if (_selectedCodes.size >= MAX_COURSES) { e.target.checked = false; return; }
+            _selectedCodes.add(code);
+          } else {
+            _selectedCodes.delete(code);
+          }
+          renderOptions();
+          updateTriggerLabel();
+        });
+      });
+    }
+
+    function openDropdown() {
+      document.getElementById('enroll-panel').classList.add('open');
+      document.getElementById('enroll-trigger').classList.add('open');
+      document.getElementById('enroll-trigger').setAttribute('aria-expanded', 'true');
+    }
+    function closeDropdown() {
+      document.getElementById('enroll-panel').classList.remove('open');
+      document.getElementById('enroll-trigger').classList.remove('open');
+      document.getElementById('enroll-trigger').setAttribute('aria-expanded', 'false');
+    }
+
+    document.getElementById('enroll-trigger').addEventListener('click', () => {
+      document.getElementById('enroll-panel').classList.contains('open') ? closeDropdown() : openDropdown();
+    });
+    document.getElementById('enroll-trigger').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('enroll-trigger').click(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('enroll-dropdown-wrap').contains(e.target)) closeDropdown();
+    });
+
+    document.getElementById('enroll-clear-btn').addEventListener('click', () => {
+      _selectedCodes.clear();
+      renderOptions();
+      updateTriggerLabel();
+    });
+
     async function loadAvailableCourses() {
       try {
         const [allRes, myRes, pendingRes] = await Promise.all([
@@ -575,13 +704,10 @@
         const pending = await pendingRes.json();
         const enrolledIds = new Set(mine.map(c => c.id));
         const pendingIds = new Set(pending.map(c => c.course_id || c.id));
-        // Exclude already approved or pending courses from the dropdown
-        const available = all.filter(c => !enrolledIds.has(c.id) && !pendingIds.has(c.id));
-        const sel = document.getElementById('enroll-select');
-        sel.innerHTML = available.map(c => `<option value="${c.course_code}">${c.course_code} — ${c.course_name}${c.lecturer_name ? ' (' + c.lecturer_name + ')' : ''}</option>`).join('');
-        if (!available.length) {
-          sel.innerHTML = '<option value="" disabled>No courses available to enroll</option>';
-        }
+        _availableCourses = all.filter(c => !enrolledIds.has(c.id) && !pendingIds.has(c.id));
+        _selectedCodes = new Set([..._selectedCodes].filter(code => _availableCourses.some(c => c.course_code === code)));
+        renderOptions();
+        updateTriggerLabel();
       } catch (e) {
         console.error('Failed to load available courses', e);
       }
@@ -592,12 +718,11 @@
       const okEl  = document.getElementById('enroll-success');
       errEl.textContent = '';
       okEl.textContent  = '';
-      const sel = document.getElementById('enroll-select');
-      const selected = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+      closeDropdown();
+      const selected = [..._selectedCodes];
       if (!selected.length) { errEl.textContent = 'Please select at least one course.'; return; }
-      if (selected.length > 8) { errEl.textContent = 'You can select a maximum of 8 courses.'; return; }
+      if (selected.length > MAX_COURSES) { errEl.textContent = `You can select a maximum of ${MAX_COURSES} courses.`; return; }
 
-      // Submit enrollment requests for all selected courses
       let successCount = 0;
       const errors = [];
       for (const code of selected) {
@@ -607,15 +732,13 @@
           body: JSON.stringify({ course_code: code })
         });
         const data = await res.json();
-        if (res.ok) {
-          successCount++;
-        } else {
-          errors.push(`${code}: ${data.error}`);
-        }
+        if (res.ok) { successCount++; }
+        else { errors.push(`${code}: ${data.error}`); }
       }
 
       if (successCount > 0) {
         okEl.textContent = `${successCount} enrollment request${successCount > 1 ? 's' : ''} sent. Awaiting admin approval.`;
+        _selectedCodes.clear();
         loadMyCourses();
         loadPendingCourses();
         loadAvailableCourses();
