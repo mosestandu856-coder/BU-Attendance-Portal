@@ -3,3 +3,12 @@ node_modules/
 cert.pem
 key.pem
 db/attendance.db
+
+# Non-essential docs and planning files
+documentation/
+.kiro/specs/
+generate-cert.js
+start-dev.bat
+*.png
+*.jpeg
+*.jpg
