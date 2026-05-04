@@ -881,3 +881,15 @@ button:active {
   width: 22px;
   height: 22px;
 }
+
+/* Hide browser built-in password reveal button (Edge, Samsung Browser, IE) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
