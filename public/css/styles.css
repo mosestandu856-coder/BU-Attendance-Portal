@@ -813,3 +813,54 @@ button:active {
   .lec-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
   .data-table { font-size: 0.72rem; }
 }
+
+/* ── Password show/hide toggle ─────────────────────────────────────────────── */
+.pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.pw-wrap input[type="password"],
+.pw-wrap input[type="text"] {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+  padding-right: 3rem !important;
+  border-radius: var(--border-radius);
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  min-width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-left: none;
+  cursor: pointer;
+  color: #94a3b8;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  z-index: 2;
+  padding: 0;
+}
+
+.pw-toggle:hover,
+.pw-toggle:focus {
+  color: var(--primary-color);
+  outline: none;
+}
+
+.pw-toggle svg {
+  pointer-events: none;
+  display: block;
+  flex-shrink: 0;
+}
