@@ -830,37 +830,54 @@ button:active {
   border-radius: var(--border-radius);
 }
 
-.pw-toggle {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 3rem;
-  min-width: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  border-left: none;
-  cursor: pointer;
-  color: #94a3b8;
-  border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  transition: color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  z-index: 2;
-  padding: 0;
+.pw-toggle,
+.pw-toggle:hover,
+.pw-toggle:active,
+.pw-toggle:focus {
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 3rem !important;
+  min-width: 3rem !important;
+  max-width: 3rem !important;
+  height: auto !important;
+  min-height: unset !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  color: #94a3b8 !important;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0 !important;
+  transition: color 0.2s !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+  z-index: 2 !important;
+  padding: 0 !important;
+  transform: none !important;
+  align-self: auto !important;
+  font-size: 0 !important;
 }
 
-.pw-toggle:hover,
+.pw-toggle:hover {
+  color: var(--primary-color) !important;
+  background-color: transparent !important;
+}
+
 .pw-toggle:focus {
-  color: var(--primary-color);
-  outline: none;
+  outline: none !important;
+  color: var(--primary-color) !important;
 }
 
 .pw-toggle svg {
   pointer-events: none;
   display: block;
   flex-shrink: 0;
+  font-size: initial;
+  width: 22px;
+  height: 22px;
 }
