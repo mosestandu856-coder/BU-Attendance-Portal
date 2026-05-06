@@ -55,6 +55,9 @@ app.get('/lecturer.html', (req, res, next) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Health check endpoint for Render and UptimeRobot
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
 initDB().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`\nServer running on http://localhost:${PORT}`);
@@ -62,7 +65,14 @@ initDB().then(() => {
   });
 }).catch(err => {
   console.error('Failed to initialize database:', err);
-  process.exit(1);
+  console.error('DB_HOST:', process.env.DB_HOST);
+  console.error('DB_NAME:', process.env.DB_NAME);
+  console.error('DB_USER:', process.env.DB_USER);
+  // Still start the server so Render doesn't mark it as failed
+  // API calls will fail gracefully until DB is available
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\nServer running on http://localhost:${PORT} (DB unavailable)\n`);
+  });
 });
 
 module.exports = app;
