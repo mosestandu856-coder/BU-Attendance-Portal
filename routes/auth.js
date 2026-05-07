@@ -160,12 +160,31 @@ router.delete('/students/:id', async (req, res) => {
   if (parseInt(id) === req.session.userId) return res.status(400).json({ error: 'Cannot delete your own account' });
 
   try {
+    // Delete all related records in correct order to avoid FK constraint errors
+    await prepare('DELETE FROM student_lecturer_ratings WHERE student_id = ?').run(id);
+    await prepare('DELETE FROM student_lecturer_ratings WHERE lecturer_id = ?').run(id);
+    await prepare('DELETE FROM course_ratings WHERE rater_id = ?').run(id);
+    await prepare('DELETE FROM course_ratings WHERE ratee_id = ?').run(id);
+    await prepare('DELETE FROM student_assessments WHERE student_id = ?').run(id);
+    await prepare('DELETE FROM lecturer_assessments WHERE lecturer_id = ?').run(id);
     await prepare('DELETE FROM attendance WHERE user_id = ?').run(id);
+    await prepare('DELETE FROM course_enrollments WHERE student_id = ?').run(id);
+    await prepare('DELETE FROM webauthn_credentials WHERE user_id = ?').run(id);
+    // Delete lectures created by this user and their attendance records
+    const lectures = await prepare('SELECT id FROM lectures WHERE created_by = ?').all(id);
+    for (const lec of lectures) {
+      await prepare('DELETE FROM attendance WHERE lecture_id = ?').run(lec.id);
+      await prepare('DELETE FROM student_assessments WHERE lecture_id = ?').run(lec.id);
+      await prepare('DELETE FROM student_lecturer_ratings WHERE lecture_id = ?').run(lec.id);
+    }
+    await prepare('DELETE FROM lectures WHERE created_by = ?').run(id);
+    await prepare('DELETE FROM courses WHERE lecturer_id = ?').run(id);
+    await prepare('DELETE FROM contact_messages WHERE user_id = ?').run(id);
     await prepare('DELETE FROM users WHERE id = ?').run(id);
-    return res.json({ message: 'Student deleted' });
+    return res.json({ message: 'User deleted successfully' });
   } catch (err) {
-    console.error('Delete student error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Delete user error:', err);
+    return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 });
 
