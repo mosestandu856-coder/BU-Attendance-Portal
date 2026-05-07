@@ -699,9 +699,14 @@
           fetch('/api/courses/my'),
           fetch('/api/courses/my/pending')
         ]);
+        if (!allRes.ok) {
+          console.error('Failed to fetch courses:', allRes.status, await allRes.text());
+          document.getElementById('enroll-options-list').innerHTML = '<div style="padding:.85rem 1rem;color:#dc2626;font-size:.9rem;">Failed to load courses. Please refresh the page.</div>';
+          return;
+        }
         const all = await allRes.json();
-        const mine = await myRes.json();
-        const pending = await pendingRes.json();
+        const mine = myRes.ok ? await myRes.json() : [];
+        const pending = pendingRes.ok ? await pendingRes.json() : [];
         const enrolledIds = new Set(mine.map(c => c.id));
         const pendingIds = new Set(pending.map(c => c.course_id || c.id));
         _availableCourses = all.filter(c => !enrolledIds.has(c.id) && !pendingIds.has(c.id));
@@ -710,6 +715,7 @@
         updateTriggerLabel();
       } catch (e) {
         console.error('Failed to load available courses', e);
+        document.getElementById('enroll-options-list').innerHTML = '<div style="padding:.85rem 1rem;color:#dc2626;font-size:.9rem;">Error loading courses. Please refresh.</div>';
       }
     }
 
